@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     Quaternion m_Rotation = Quaternion.identity;
     bool m_IsGrounded;
     bool m_QueuedJump;
+    Transform m_CameraTransform;
 
     void Start()
     {
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
         MoveAction.Enable();
         if (SprintAction != null) SprintAction.Enable();
         if (JumpAction != null) JumpAction.Enable();
+        if (Camera.main != null) m_CameraTransform = Camera.main.transform;
     }
 
     void Update()
@@ -38,6 +40,10 @@ public class PlayerMovement : MonoBehaviour
         if (JumpAction != null && JumpAction.triggered)
         {
             m_QueuedJump = true;
+        }
+        if (m_CameraTransform == null && Camera.main != null)
+        {
+            m_CameraTransform = Camera.main.transform;
         }
     }
 
@@ -47,17 +53,45 @@ public class PlayerMovement : MonoBehaviour
 
         float horizontal = pos.x;
         float vertical = pos.y;
-
-        m_Movement.Set(horizontal, 0f, vertical);
-        m_Movement.Normalize();
+        if (m_CameraTransform != null)
+        {
+            Vector3 camForward = m_CameraTransform.forward;
+            camForward.y = 0f;
+            camForward.Normalize();
+            Vector3 camRight = m_CameraTransform.right;
+            camRight.y = 0f;
+            camRight.Normalize();
+            m_Movement = camRight * horizontal + camForward * vertical;
+            if (m_Movement.sqrMagnitude > 1f) m_Movement.Normalize();
+        }
+        else
+        {
+            m_Movement.Set(horizontal, 0f, vertical);
+            m_Movement.Normalize();
+        }
 
         bool hasHorizontalInput = !Mathf.Approximately(horizontal, 0f);
         bool hasVerticalInput = !Mathf.Approximately(vertical, 0f);
         bool isWalking = hasHorizontalInput || hasVerticalInput;
         m_Animator.SetBool("IsWalking", isWalking);
 
-        Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
-        m_Rotation = Quaternion.LookRotation(desiredForward);
+        // Make character face the camera's yaw so it "rotates with the camera"
+        if (m_CameraTransform != null)
+        {
+            Vector3 cameraYawForward = m_CameraTransform.forward;
+            cameraYawForward.y = 0f;
+            if (cameraYawForward.sqrMagnitude > 0.0001f)
+            {
+                cameraYawForward.Normalize();
+                Vector3 desiredForward = Vector3.RotateTowards(transform.forward, cameraYawForward, turnSpeed * Time.deltaTime, 0f);
+                m_Rotation = Quaternion.LookRotation(desiredForward);
+            }
+        }
+        else if (m_Movement.sqrMagnitude > 0.0001f)
+        {
+            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
+            m_Rotation = Quaternion.LookRotation(desiredForward);
+        }
 
         // Ground check
         m_IsGrounded = Physics.Raycast(m_Rigidbody.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f, groundMask, QueryTriggerInteraction.Ignore);
