@@ -138,7 +138,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2169015493072892358, guid: 977a51b91ebec924992bab34436eba91, type: 3}
 --- !u!114 &6068310332874141424
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e331d3d7f9358d84a9f8400e35c5dab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  damage: 10
+  damage: 100
   lifetime: 5
   hitLayers:
     serializedVersion: 2

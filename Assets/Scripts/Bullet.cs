@@ -5,9 +5,11 @@ public class Bullet : MonoBehaviour
     [Header("Bullet Settings")]
     public float damage = 10f;
     public float lifetime = 5f;
+    public float bulletSpeed = 20f;
     public LayerMask hitLayers = ~0;
     public GameObject hitEffect;
     
+
     [Header("Physics")]
     public bool useGravity = false;
     public float bounceForce = 0f;
@@ -39,11 +41,30 @@ public class Bullet : MonoBehaviour
         
         hasHit = true;
         
+        // Get impact point and direction
+        Vector3 impactPoint = transform.position;
+        Vector3 impactDirection = transform.forward;
+        float impactForce = rb != null ? rb.linearVelocity.magnitude : bulletSpeed;
+        
         // Apply damage if target has health component
         Health targetHealth = other.GetComponent<Health>();
         if (targetHealth != null)
         {
             targetHealth.TakeDamage(damage);
+        }
+        
+        // Apply damage and impact to enemy health
+        EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
+        }
+        
+        // Apply impact force to ragdoll if present
+        RagdollController ragdoll = other.GetComponent<RagdollController>();
+        if (ragdoll != null)
+        {
+            ragdoll.ApplyImpact(impactPoint, impactDirection, impactForce);
         }
         
         // Create hit effect
@@ -73,6 +94,12 @@ public class Bullet : MonoBehaviour
         
         hasHit = true;
         
+        // Get impact point and direction from collision
+        ContactPoint contact = collision.contacts[0];
+        Vector3 impactPoint = contact.point;
+        Vector3 impactDirection = transform.forward;
+        float impactForce = rb != null ? rb.linearVelocity.magnitude : bulletSpeed;
+        
         // Apply damage if target has health component
         Health targetHealth = collision.gameObject.GetComponent<Health>();
         if (targetHealth != null)
@@ -80,10 +107,23 @@ public class Bullet : MonoBehaviour
             targetHealth.TakeDamage(damage);
         }
         
+        // Apply damage and impact to enemy health
+        EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
+        }
+        
+        // Apply impact force to ragdoll if present
+        RagdollController ragdoll = collision.gameObject.GetComponent<RagdollController>();
+        if (ragdoll != null)
+        {
+            ragdoll.ApplyImpact(impactPoint, impactDirection, impactForce);
+        }
+        
         // Create hit effect
         if (hitEffect != null)
         {
-            ContactPoint contact = collision.contacts[0];
             GameObject effect = Instantiate(hitEffect, contact.point, Quaternion.LookRotation(contact.normal));
             Destroy(effect, 2f);
         }
