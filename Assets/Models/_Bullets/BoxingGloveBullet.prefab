@@ -155,9 +155,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   damage: 100
   lifetime: 5
+  bulletSpeed: 40
   hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
   hitEffect: {fileID: 0}
   useGravity: 0
-  bounceForce: 0
+  bounceForce: 5
