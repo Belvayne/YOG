@@ -118,25 +118,47 @@ public class GameUI : MonoBehaviour
         {
             // Try to find it in the scene if Instance is null
             killCounter = FindObjectOfType<KillCounter>();
-            if (killCounter == null) return;
+            if (killCounter == null) 
+            {
+                Debug.LogWarning("GameUI: No KillCounter found!");
+                return;
+            }
         }
         
         // Update kill count text
         if (killCountText != null)
         {
-            killCountText.text = $"Kills: {killCounter.GetCurrentKills()}/{killCounter.GetTargetKills()}";
+            string killText = $"Kills: {killCounter.GetCurrentKills()}/{killCounter.GetTargetKills()}";
+            killCountText.text = killText;
+            Debug.Log($"GameUI: Updated kill text to: {killText}");
+        }
+        else
+        {
+            Debug.LogWarning("GameUI: killCountText is null!");
         }
         
         // Update kill progress bar
         if (killProgressBar != null)
         {
-            killProgressBar.value = killCounter.GetKillProgress();
+            float progress = killCounter.GetKillProgress();
+            killProgressBar.value = progress;
+            Debug.Log($"GameUI: Updated kill progress bar to: {progress}");
+        }
+        else
+        {
+            Debug.LogWarning("GameUI: killProgressBar is null!");
         }
         
         // Update level complete text
         if (levelCompleteText != null)
         {
-            levelCompleteText.gameObject.SetActive(killCounter.IsTargetReached());
+            bool targetReached = killCounter.IsTargetReached();
+            levelCompleteText.gameObject.SetActive(targetReached);
+            Debug.Log($"GameUI: Level complete text active: {targetReached}");
+        }
+        else
+        {
+            Debug.LogWarning("GameUI: levelCompleteText is null!");
         }
     }
     

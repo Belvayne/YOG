@@ -222,37 +222,75 @@ public class EnemySpawner : MonoBehaviour
     
     void SetupEnemyTracking(GameObject enemy)
     {
+        Debug.Log($"Setting up death tracking for {enemy.name}");
+        
         // Add death tracking to enemy
         SimpleEnemyHealth health = enemy.GetComponent<SimpleEnemyHealth>();
         if (health != null)
         {
+            Debug.Log($"Found SimpleEnemyHealth on {enemy.name}, adding death listener");
             health.OnDeath.AddListener(() => OnEnemyDeath(enemy));
+        }
+        else
+        {
+            Debug.Log($"No SimpleEnemyHealth found on {enemy.name}");
         }
         
         // Also check for regular Health component
         Health regularHealth = enemy.GetComponent<Health>();
         if (regularHealth != null)
         {
+            Debug.Log($"Found Health component on {enemy.name}, adding death listener");
             regularHealth.OnDeath.AddListener(() => OnEnemyDeath(enemy));
+        }
+        else
+        {
+            Debug.Log($"No Health component found on {enemy.name}");
+        }
+        
+        // Check for EnemyHealth component
+        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            Debug.Log($"Found EnemyHealth on {enemy.name}, adding death listener");
+            enemyHealth.OnDeath.AddListener(() => OnEnemyDeath(enemy));
+        }
+        else
+        {
+            Debug.Log($"No EnemyHealth found on {enemy.name}");
         }
     }
     
     void OnEnemyDeath(GameObject enemy)
     {
+        Debug.Log($"=== OnEnemyDeath called for {enemy.name} ===");
+        
         // Remove from active enemies list
         if (activeEnemies.Contains(enemy))
         {
             activeEnemies.Remove(enemy);
+            Debug.Log($"Removed {enemy.name} from active enemies list");
+        }
+        else
+        {
+            Debug.LogWarning($"{enemy.name} was not in active enemies list!");
         }
         
         // Notify kill counter
         KillCounter killCounter = FindObjectOfType<KillCounter>();
         if (killCounter != null)
         {
+            Debug.Log($"KillCounter found! Current kills before: {killCounter.GetCurrentKills()}");
             killCounter.AddKill();
+            Debug.Log($"Kill added! Current kills after: {killCounter.GetCurrentKills()}");
+        }
+        else
+        {
+            Debug.LogError("KillCounter not found in scene! This is the problem!");
         }
         
         Debug.Log($"Enemy died. Active enemies: {activeEnemies.Count}");
+        Debug.Log("=== OnEnemyDeath complete ===");
     }
     
     void SetupEnemyMovement(GameObject enemy)

@@ -230,87 +230,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 51681259}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &286039572
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 286039574}
-  - component: {fileID: 286039573}
-  m_Layer: 0
-  m_Name: MenuManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &286039573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 286039572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1b2c8106a56cd24d9c87636b57b21c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MenuManager
-  startMenuPanel: {fileID: 0}
-  gameUIPanel: {fileID: 0}
-  pauseMenuPanel: {fileID: 0}
-  gameOverPanel: {fileID: 0}
-  levelCompletePanel: {fileID: 0}
-  startGameButton: {fileID: 0}
-  quitGameButton: {fileID: 0}
-  settingsButton: {fileID: 0}
-  titleText: {fileID: 0}
-  restartButton: {fileID: 0}
-  mainMenuButton: {fileID: 0}
-  quitButton: {fileID: 0}
-  gameOverText: {fileID: 0}
-  finalScoreText: {fileID: 0}
-  nextLevelButton: {fileID: 0}
-  mainMenuCompleteButton: {fileID: 0}
-  levelCompleteText: {fileID: 0}
-  completionTimeText: {fileID: 0}
-  resumeButton: {fileID: 0}
-  mainMenuPauseButton: {fileID: 0}
-  quitPauseButton: {fileID: 0}
-  hideCursorInGame: 1
-  showCursorInMenus: 1
-  pauseKey: 27
-  pauseAction:
-    m_Name: Pause
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: e29d38bb-d4f7-4a47-adac-078ef7b988c1
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  audioSource: {fileID: 0}
-  buttonClickSound: {fileID: 0}
-  menuMusic: {fileID: 0}
-  gameMusic: {fileID: 0}
---- !u!4 &286039574
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 286039572}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 892905196}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,7 +848,7 @@ MonoBehaviour:
   levelCompleteUI: {fileID: 0}
   gameOverUI: {fileID: 0}
   pauseUI: {fileID: 0}
-  menuManager: {fileID: 286039573}
+  menuManager: {fileID: 0}
   OnGameStart:
     m_PersistentCalls:
       m_Calls: []
@@ -949,6 +868,24 @@ MonoBehaviour:
   levelCompleteSound: {fileID: 0}
   gameOverSound: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  pauseAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c9c100d0-91a5-4275-a167-5db81e5a9b7d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  restartAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 0fd87b5f-8a3d-48f3-a35b-370c825fb3c1
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!4 &892905196
 Transform:
   m_ObjectHideFlags: 0
@@ -962,8 +899,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2050455754}
   - {fileID: 1382731010}
-  - {fileID: 286039574}
   - {fileID: 1167653537}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1925,6 +1862,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2050455753
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2050455754}
+  - component: {fileID: 2050455755}
+  m_Layer: 0
+  m_Name: KillDebugger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2050455754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050455753}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 892905196}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2050455755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050455753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f70976247417154ba8775589ecf8504, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KillDebugger
+  debugText: {fileID: 0}
+  testKillButton: {fileID: 0}
+  resetKillsButton: {fileID: 0}
+  showDebugInfo: 1
+  updateInterval: 0.1
 --- !u!1001 &4115431415772111742
 PrefabInstance:
   m_ObjectHideFlags: 0

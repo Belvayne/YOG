@@ -115,6 +115,7 @@ public class EnemyHealth : MonoBehaviour
         }
         
         // Invoke death event
+        Debug.Log($"{gameObject.name} invoking OnDeath event...");
         OnDeath?.Invoke();
         
         Debug.Log($"{gameObject.name} has died!");
