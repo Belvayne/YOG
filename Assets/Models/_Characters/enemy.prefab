@@ -1355,9 +1355,8 @@ GameObject:
   - component: {fileID: 926652862841015836}
   - component: {fileID: 185045570544380338}
   - component: {fileID: 2154459534471189695}
-  - component: {fileID: -1854364715241740577}
   - component: {fileID: 6199273327976213040}
-  - component: {fileID: 2802500738883846632}
+  - component: {fileID: 5991033848867407917}
   m_Layer: 0
   m_Name: enemy
   m_TagString: Untagged
@@ -1433,86 +1432,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-1854364715241740577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547171355520177318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df248a2bbdcc1c4db936ecf03184ea7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyRagdollSetup
-  boneSetups:
-  - boneName: Hips
-    mass: 5
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.3, y: 0.2, z: 0.3}
-    useCapsuleCollider: 1
-  - boneName: Spine
-    mass: 3
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.25, y: 0.3, z: 0.2}
-    useCapsuleCollider: 1
-  - boneName: Chest
-    mass: 4
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.3, y: 0.25, z: 0.25}
-    useCapsuleCollider: 1
-  - boneName: Head
-    mass: 1
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.2, y: 0.2, z: 0.2}
-    useCapsuleCollider: 1
-  - boneName: LeftArm
-    mass: 2
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.1, y: 0.3, z: 0.1}
-    useCapsuleCollider: 1
-  - boneName: RightArm
-    mass: 2
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.1, y: 0.3, z: 0.1}
-    useCapsuleCollider: 1
-  - boneName: LeftThigh
-    mass: 3
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.15, y: 0.4, z: 0.15}
-    useCapsuleCollider: 1
-  - boneName: RightThigh
-    mass: 3
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.15, y: 0.4, z: 0.15}
-    useCapsuleCollider: 1
-  - boneName: LeftCalf
-    mass: 2
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.1, y: 0.3, z: 0.1}
-    useCapsuleCollider: 1
-  - boneName: RightCalf
-    mass: 2
-    drag: 0.1
-    angularDrag: 0.1
-    colliderSize: {x: 0.1, y: 0.3, z: 0.1}
-    useCapsuleCollider: 1
-  setupOnStart: 0
-  addRagdollController: 1
-  addEnemyHealth: 1
-  maxHealth: 100
-  enableRagdollOnDamage: 1
-  enableRagdollOnDeath: 1
-  ragdollForceOnDeath: 15
 --- !u!114 &6199273327976213040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1528,7 +1447,7 @@ MonoBehaviour:
   maxHealth: 100
   isInvulnerable: 0
   dieOnZeroHealth: 1
-  ragdollController: {fileID: 2802500738883846632}
+  ragdollController: {fileID: 0}
   enableRagdollOnDamage: 1
   enableRagdollOnDeath: 1
   ragdollForceOnDeath: 150
@@ -1547,7 +1466,7 @@ MonoBehaviour:
   OnRagdollActivated:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2802500738883846632
+--- !u!114 &5991033848867407917
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1556,24 +1475,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 547171355520177318}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 815d1f54f50f7af428e8606a850e731e, type: 3}
+  m_Script: {fileID: 11500000, guid: b74b2529ea45ac7489a09f8c3aa8cb3e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RagdollController
-  startRagdoll: 0
-  ragdollForce: 100
-  ragdollDuration: 50
-  autoRecover: 0
-  recoveryTime: 3
-  ragdollBones: []
-  ragdollRigidbodies: []
-  ragdollColliders: []
-  originalAnimator: {fileID: 0}
-  originalRigidbody: {fileID: 2154459534471189695}
-  originalCollider: {fileID: 185045570544380338}
-  originalController: {fileID: 0}
-  impactForceMultiplier: 1
-  explosionRadius: 2
-  applyExplosionForce: 1
+  m_EditorClassIdentifier: Assembly-CSharp::CrazyPhysicsSetup
+  setupOnStart: 1
+  addCrazyPhysicsController: 1
+  addSimpleEnemyHealth: 1
+  baseForceMultiplier: 1
+  explosionForce: 10
+  explosionRadius: 1
+  upwardForce: 3
+  spinForce: 0
+  bounceForce: 8
+  maxHealth: 100
+  enableCrazyPhysicsOnDamage: 1
+  enableCrazyPhysicsOnDeath: 1
+  deathForceMultiplier: 2
+  bouncyMaterial: {fileID: 0}
 --- !u!1 &557164447141937013
 GameObject:
   m_ObjectHideFlags: 0

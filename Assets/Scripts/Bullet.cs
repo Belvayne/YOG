@@ -60,11 +60,25 @@ public class Bullet : MonoBehaviour
             enemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
         }
         
+        // Apply damage and impact to simple enemy health
+        SimpleEnemyHealth simpleEnemyHealth = other.GetComponent<SimpleEnemyHealth>();
+        if (simpleEnemyHealth != null)
+        {
+            simpleEnemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
+        }
+        
         // Apply impact force to ragdoll if present
         RagdollController ragdoll = other.GetComponent<RagdollController>();
         if (ragdoll != null)
         {
             ragdoll.ApplyImpact(impactPoint, impactDirection, impactForce);
+        }
+        
+        // Apply crazy physics if present
+        CrazyPhysicsController crazyPhysics = other.GetComponent<CrazyPhysicsController>();
+        if (crazyPhysics != null)
+        {
+            crazyPhysics.ApplyCrazyPhysics(impactPoint, impactDirection, impactForce);
         }
         
         // Create hit effect
@@ -114,11 +128,25 @@ public class Bullet : MonoBehaviour
             enemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
         }
         
+        // Apply damage and impact to simple enemy health
+        SimpleEnemyHealth simpleEnemyHealth = collision.gameObject.GetComponent<SimpleEnemyHealth>();
+        if (simpleEnemyHealth != null)
+        {
+            simpleEnemyHealth.TakeDamage(damage, impactPoint, impactDirection, impactForce);
+        }
+        
         // Apply impact force to ragdoll if present
         RagdollController ragdoll = collision.gameObject.GetComponent<RagdollController>();
         if (ragdoll != null)
         {
             ragdoll.ApplyImpact(impactPoint, impactDirection, impactForce);
+        }
+        
+        // Apply crazy physics if present
+        CrazyPhysicsController crazyPhysics = collision.gameObject.GetComponent<CrazyPhysicsController>();
+        if (crazyPhysics != null)
+        {
+            crazyPhysics.ApplyCrazyPhysics(impactPoint, impactDirection, impactForce);
         }
         
         // Create hit effect
