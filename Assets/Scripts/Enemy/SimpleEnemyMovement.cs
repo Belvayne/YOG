@@ -29,6 +29,7 @@ public class SimpleEnemyMovement : MonoBehaviour
     private bool isChasing = false;
     private bool isAttacking = false;
     private bool targetDetected = false;
+    private bool isDead = false;
     
     void Start()
     {

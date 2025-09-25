@@ -90,6 +90,10 @@ public class LevelManager : MonoBehaviour
         levelComplete = false;
         gameOver = false;
         
+        // Hide cursor for gameplay
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        
         // Show game UI
         if (gameUI != null)
         {
@@ -280,10 +284,18 @@ public class LevelManager : MonoBehaviour
         gamePaused = true;
         Time.timeScale = 0f;
         
+        // Show cursor for pause menu
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
         // Show pause UI
         if (pauseUI != null)
         {
             pauseUI.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("No pause UI assigned to LevelManager! Please assign a pause UI in the inspector.");
         }
         
         // Hide game UI
@@ -303,6 +315,10 @@ public class LevelManager : MonoBehaviour
         gamePaused = false;
         Time.timeScale = 1f;
         
+        // Hide cursor for gameplay
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        
         // Hide pause UI
         if (pauseUI != null)
         {
@@ -317,6 +333,30 @@ public class LevelManager : MonoBehaviour
         
         OnGameResume?.Invoke();
         Debug.Log("Game resumed!");
+    }
+    
+    // Helper method to wire up pause menu buttons
+    public void SetupPauseMenuButtons(UnityEngine.UI.Button resumeButton, UnityEngine.UI.Button restartButton, UnityEngine.UI.Button mainMenuButton)
+    {
+        if (resumeButton != null)
+        {
+            resumeButton.onClick.RemoveAllListeners();
+            resumeButton.onClick.AddListener(ResumeGame);
+        }
+        
+        if (restartButton != null)
+        {
+            restartButton.onClick.RemoveAllListeners();
+            restartButton.onClick.AddListener(RestartLevel);
+        }
+        
+        if (mainMenuButton != null)
+        {
+            mainMenuButton.onClick.RemoveAllListeners();
+            mainMenuButton.onClick.AddListener(LoadMainMenu);
+        }
+        
+        Debug.Log("Pause menu buttons wired up!");
     }
     
     public void TogglePause()

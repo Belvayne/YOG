@@ -1453,7 +1453,7 @@ MonoBehaviour:
   ragdollForceOnDeath: 150
   deathDelay: 0
   destroyOnDeath: 1
-  destroyDelay: 5
+  destroyDelay: 1
   OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
