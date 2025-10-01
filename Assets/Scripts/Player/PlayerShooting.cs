@@ -29,6 +29,8 @@ public class PlayerShooting : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip shootSound;
     public AudioClip reloadSound;
+    [Range(0f, 0.3f)]
+    public float pitchVariation = 0.1f; // Random pitch variation for shoot sound
     
     // Private variables
     private float lastFireTime;
@@ -160,9 +162,11 @@ public class PlayerShooting : MonoBehaviour
             muzzleFlash.Play();
         }
         
-        // Sound effect
+        // Sound effect with random pitch variation
         if (audioSource != null && shootSound != null)
         {
+            // Randomize pitch (1.0 is normal pitch)
+            audioSource.pitch = 1.0f + Random.Range(-pitchVariation, pitchVariation);
             audioSource.PlayOneShot(shootSound);
         }
     }
