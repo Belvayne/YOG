@@ -1,0 +1,61 @@
+using UnityEngine;
+
+public class RagdollActivator : MonoBehaviour
+{
+    [Header("References")]
+    public Animator animator;
+    public Rigidbody[] ragdollBodies;
+
+    private bool isRagdoll = false;
+
+    void Awake()
+    {
+        // Automatically find all rigidbodies in children
+        if (ragdollBodies == null || ragdollBodies.Length == 0)
+            ragdollBodies = GetComponentsInChildren<Rigidbody>();
+
+        SetRagdoll(false);
+    }
+
+    public void SetRagdoll(bool active)
+    {
+        isRagdoll = active;
+
+        // Disable Animator when activating ragdoll
+        if (animator != null)
+            animator.enabled = !active;
+
+        foreach (var rb in ragdollBodies)
+        {
+            rb.isKinematic = !active;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+    }
+
+    public void ActivateRagdoll(Vector3 hitPosition, Vector3 hitForce)
+    {
+        //if (isRagdoll) return;
+
+        SetRagdoll(true);
+
+        // Find the closest rigidbody to where it was hit
+        Rigidbody closestBody = null;
+        float minDist = float.MaxValue;
+
+        foreach (var rb in ragdollBodies)
+        {
+            float dist = Vector3.Distance(rb.worldCenterOfMass, hitPosition);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestBody = rb;
+            }
+        }
+
+        // Apply the force to that part
+        if (closestBody != null)
+        {
+            closestBody.AddForce(hitForce, ForceMode.Impulse);
+        }
+    }
+}
