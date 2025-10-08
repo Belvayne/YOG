@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private float speed = 5f;
+    [SerializeField] private float sprintMultiplier = 1.8f;
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.8f;
     [SerializeField] private bool shouldFaceMoveDirection = false;
@@ -12,6 +13,8 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 moveInput;
     private Vector3 velocity;
+    private bool isSprinting = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,6 +37,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            isSprinting = true;
+        else if (context.canceled)
+            isSprinting = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -42,12 +53,14 @@ public class PlayerController : MonoBehaviour
 
         forward.y = 0;
         right.y = 0;
-
         forward.Normalize();
         right.Normalize();
 
         Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
-        controller.Move(moveDirection * speed * Time.deltaTime);
+
+        float currentSpeed = isSprinting ? speed * sprintMultiplier : speed;
+
+        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
 
         if (shouldFaceMoveDirection && moveDirection.sqrMagnitude > 0.001f)
         {
