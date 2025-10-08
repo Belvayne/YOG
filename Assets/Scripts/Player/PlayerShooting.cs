@@ -19,11 +19,6 @@ public class PlayerShooting : MonoBehaviour
     public InputAction reloadAction;
     public InputAction aimAction;
     
-    [Header("Aiming")]
-    public Camera playerCamera;
-    public float aimSensitivity = 1f;
-    public float maxAimDistance = 100f;
-    
     [Header("Effects")]
     public ParticleSystem muzzleFlash;
     public AudioSource audioSource;
@@ -50,9 +45,6 @@ public class PlayerShooting : MonoBehaviour
         if (reloadAction != null) reloadAction.Enable();
         if (aimAction != null) aimAction.Enable();
         
-        // Get camera reference
-        if (playerCamera == null)
-            playerCamera = Camera.main;
         
         // Create fire point if not assigned
         if (firePoint == null)
@@ -67,7 +59,6 @@ public class PlayerShooting : MonoBehaviour
     void Update()
     {
         HandleInput();
-        UpdateAiming();
     }
     
     void HandleInput()
@@ -88,31 +79,6 @@ public class PlayerShooting : MonoBehaviour
         if (aimAction != null)
         {
             isAiming = aimAction.IsPressed();
-        }
-    }
-    
-    void UpdateAiming()
-    {
-        if (playerCamera != null)
-        {
-            // Create ray from camera center
-            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            
-            // Cast ray to find aim point
-            if (Physics.Raycast(ray, out aimHit, maxAimDistance))
-            {
-                aimDirection = (aimHit.point - firePoint.position).normalized;
-            }
-            else
-            {
-                // If no hit, aim in camera forward direction
-                aimDirection = playerCamera.transform.forward;
-            }
-        }
-        else
-        {
-            // Fallback to transform forward
-            aimDirection = transform.forward;
         }
     }
     

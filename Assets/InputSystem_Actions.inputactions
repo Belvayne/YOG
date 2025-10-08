@@ -1111,12 +1111,12 @@
                 },
                 {
                     "name": "GamepadZoom",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "32859d3c-f62b-419b-ac79-5dc9c908395a",
-                    "expectedControlType": "",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1144,7 +1144,7 @@
                 },
                 {
                     "name": "1D Axis",
-                    "id": "aa25ae2e-9c1a-40af-b252-a5f864ef367f",
+                    "id": "e0300e58-7888-4592-9659-0fca8b565f14",
                     "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
@@ -1155,7 +1155,7 @@
                 },
                 {
                     "name": "negative",
-                    "id": "c160d1d2-fe6d-4f20-8590-0bb652c8f87f",
+                    "id": "62e436a0-0c83-4685-a3a2-33ff86bf9f28",
                     "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
@@ -1166,7 +1166,7 @@
                 },
                 {
                     "name": "positive",
-                    "id": "5de3fb77-745b-4333-b20f-43265199fba3",
+                    "id": "9556e449-33d3-4eab-b067-a583b7178ec4",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
