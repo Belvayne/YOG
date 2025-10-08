@@ -10,7 +10,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float minDistance = 3f;
     [SerializeField] private float maxDistance = 15f;
 
-    private InputSystem_Actions controls;
+    private PlayerControls controls;
 
     private CinemachineCamera cam;
     private CinemachineOrbitalFollow orbital;
@@ -21,7 +21,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        controls = new InputSystem_Actions();
+        controls = new PlayerControls();
         controls.Enable();
         controls.CameraControls.MouseZoom.performed += HandleMouseScroll;
 
@@ -36,15 +36,14 @@ public class ThirdPersonCameraController : MonoBehaviour
     private void HandleMouseScroll(InputAction.CallbackContext context)
     {
         scrollDelta = context.ReadValue<Vector2>();
-        Debug.Log($"Mouse is scrolling. Value: {scrollDelta}");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (scrollDelta.y != 0)
+        if(scrollDelta.y != 0)
         {
-            if (orbital != null)
+            if(orbital != null)
             {
                 targetZoom = Mathf.Clamp(orbital.Radius - scrollDelta.y * zoomSpeed, minDistance, maxDistance);
                 scrollDelta = Vector2.zero;
@@ -52,9 +51,9 @@ public class ThirdPersonCameraController : MonoBehaviour
         }
 
         float bumperDelta = controls.CameraControls.GamepadZoom.ReadValue<float>();
-        if (bumperDelta != 0)
+        if(bumperDelta != 0)
         {
-            targetZoom = Mathf.Clamp(orbital.Radius - bumperDelta * zoomSpeed, maxDistance, minDistance);
+            targetZoom = Mathf.Clamp(orbital.Radius - bumperDelta * zoomSpeed, minDistance, maxDistance);
         }
 
         currentZoom = Mathf.Lerp(currentZoom, targetZoom, Time.deltaTime * zoomLerpSpeed);
