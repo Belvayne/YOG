@@ -107,8 +107,6 @@ public class PlayerShooting : MonoBehaviour
             bulletRb.linearVelocity = aimDirection * bulletSpeed;
         }
         
-        // Set bullet lifetime
-        Destroy(bullet, bulletLifetime);
         
         // Update ammo and fire time
         //currentAmmo--;
