@@ -88,7 +88,7 @@ public class PlayerShooting : MonoBehaviour
                currentAmmo > 0 && 
                Time.time >= lastFireTime + fireRate;
     }
-    
+
     void Shoot()
     {
         if (bulletPrefab == null)
@@ -96,28 +96,35 @@ public class PlayerShooting : MonoBehaviour
             Debug.LogWarning("No bullet prefab assigned!");
             return;
         }
-        
-        // Create bullet
+
+        // Define aim direction from the camera
+        Camera mainCam = Camera.main;
+        if (mainCam != null)
+        {
+            aimDirection = mainCam.transform.forward;
+        }
+        else
+        {
+            aimDirection = transform.forward;
+        }
+
+        // Spawn the bullet
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.LookRotation(aimDirection));
-        
-        // Set bullet velocity
+
+        // Add velocity
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
         {
             bulletRb.linearVelocity = aimDirection * bulletSpeed;
         }
-        
-        
+
         // Update ammo and fire time
-        //currentAmmo--;
         lastFireTime = Time.time;
-        
-        // Play effects
         PlayShootEffects();
-        
-        Debug.Log($"Shot fired! Ammo remaining: {currentAmmo}");
+
+        Debug.Log($"Shot fired in direction {aimDirection}");
     }
-    
+
     void PlayShootEffects()
     {
         // Muzzle flash
