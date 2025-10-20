@@ -2730,7 +2730,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675851274}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9431bd25299e81f48890fa2637041194, type: 3}
   m_Name: 
@@ -2802,6 +2802,8 @@ MonoBehaviour:
   layersToIgnore:
     serializedVersion: 2
     m_Bits: 8
+  playerTransform: {fileID: 1675851287}
+  rotateToCameraSpeed: 10
 --- !u!4 &1675851287 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8492508571275328572, guid: 3b49b2fca68fa454aada1be689a4289d, type: 3}
@@ -2888,6 +2890,54 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 6ae14f6c-23c6-45db-baf6-668702f301df
     m_ActionName: 'Gameplay/Sprint[/Keyboard/leftShift]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1675851290}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnShoot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 48b52b99-6ba5-4f8d-a15d-4948dcc0ea0f
+    m_ActionName: 'Gameplay/Shoot[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1675851290}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 931b9f71-6944-44dc-930c-a00eff347385
+    m_ActionName: 'Gameplay/Aim[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1675851290}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 37d78822-ddae-4354-8b78-0097c674910e
+    m_ActionName: 'Gameplay/Reload[/Keyboard/r]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
@@ -2936,6 +2986,24 @@ MonoBehaviour:
   jumpHeight: 2
   gravity: -9.8
   shouldFaceMoveDirection: 1
+  bulletPrefab: {fileID: 3859019856354466425, guid: 0388ab974c643254fa096bb50d3487ca, type: 3}
+  firePoint: {fileID: 51681260}
+  fireRate: 0.5
+  bulletSpeed: 40
+  bulletLifetime: 5
+  maxAmmo: 30
+  reloadTime: 2
+  muzzleFlash: {fileID: 0}
+  audioSource: {fileID: 376169699}
+  shootSound: {fileID: 8300000, guid: ae023277f612e73418c9cb14ce503ad1, type: 3}
+  reloadSound: {fileID: 0}
+  pitchVariation: 0.3
+  maxAimDistance: Infinity
+  layersToIgnore:
+    serializedVersion: 2
+    m_Bits: 8
+  playerTransform: {fileID: 1675851287}
+  rotateToCameraSpeed: 10
 --- !u!1 &1923689729
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,7 +3866,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5851525625503722966, guid: 3b49b2fca68fa454aada1be689a4289d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8492508571275328572, guid: 3b49b2fca68fa454aada1be689a4289d, type: 3}
@@ -3815,7 +3884,7 @@ PrefabInstance:
       insertIndex: 2
       addedObject: {fileID: 1675851290}
     - targetCorrespondingSourceObject: {fileID: 9119968605279299206, guid: 3b49b2fca68fa454aada1be689a4289d, type: 3}
-      insertIndex: 4
+      insertIndex: 3
       addedObject: {fileID: 1675851282}
     - targetCorrespondingSourceObject: {fileID: 9119968605279299206, guid: 3b49b2fca68fa454aada1be689a4289d, type: 3}
       insertIndex: -1

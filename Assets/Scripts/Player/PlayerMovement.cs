@@ -5,8 +5,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private Transform cameraTransform;
-    [SerializeField] private bool shouldFaceMoveDirection = false;
     Animator m_Animator;
 
     public InputAction MoveAction;
@@ -39,18 +37,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
-
-        forward.y = 0;
-        right.y = 0;
-
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 moveDirection = forward * m_Movement.y + right * m_Movement.x;
-
-
         if (JumpAction != null && JumpAction.triggered)
         {
             m_QueuedJump = true;
