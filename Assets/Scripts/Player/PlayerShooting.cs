@@ -34,7 +34,11 @@ public class PlayerShooting : MonoBehaviour
     private bool isAiming = false;
     private Vector3 aimDirection;
     private RaycastHit aimHit;
-    
+
+    public float maxAimDistance = Mathf.Infinity;
+    public LayerMask layersToIgnore;
+    [SerializeField] private Transform playerTransform;
+
     void Start()
     {
         // Initialize ammo
@@ -97,32 +101,45 @@ public class PlayerShooting : MonoBehaviour
             return;
         }
 
-        // Define aim direction from the camera
         Camera mainCam = Camera.main;
+        Vector3 bulletDirection;
+
         if (mainCam != null)
         {
             aimDirection = mainCam.transform.forward;
+
+            // Raycast from camera position in camera's forward direction, ignoring LayersToIgnore
+            if (Physics.Raycast(mainCam.transform.position, aimDirection, out aimHit, maxAimDistance, ~layersToIgnore))
+            {
+                Debug.Log($"Raycast hit: {aimHit.collider.gameObject.name} at {aimHit.point}");
+                // Set bullet direction towards hit point
+                bulletDirection = (aimHit.point - firePoint.position).normalized;
+            }
+            else
+            {
+                Debug.Log("Raycast did not hit anything.");
+                bulletDirection = aimDirection;
+            }
         }
         else
         {
-            aimDirection = transform.forward;
+            bulletDirection = transform.forward;
         }
 
         // Spawn the bullet
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.LookRotation(aimDirection));
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.LookRotation(bulletDirection));
 
         // Add velocity
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
         {
-            bulletRb.linearVelocity = aimDirection * bulletSpeed;
+            bulletRb.linearVelocity = bulletDirection * bulletSpeed;
         }
 
-        // Update ammo and fire time
         lastFireTime = Time.time;
         PlayShootEffects();
 
-        Debug.Log($"Shot fired in direction {aimDirection}");
+        Debug.Log($"Shot fired in direction {bulletDirection}");
     }
 
     void PlayShootEffects()
