@@ -35,6 +35,13 @@ public class PlayerController : MonoBehaviour
     [Range(0f, 0.3f)]
     public float pitchVariation = 0.1f; // Random pitch variation for shoot sound
 
+    // Weapon switch prefabs and point
+    [Header("Weapon Switch")]
+    [SerializeField] private Transform weaponPoint; // Parent transform where weapons are attached
+    [SerializeField] private GameObject weaponPrefab1;
+    [SerializeField] private GameObject weaponPrefab2;
+    [SerializeField] private GameObject weaponPrefab3;
+
     // Private variables
     private float lastFireTime;
     private int currentAmmo;
@@ -52,6 +59,8 @@ public class PlayerController : MonoBehaviour
     private Quaternion? targetRotation = null;
 
     private Coroutine resetFaceMoveDirectionCoroutine;
+
+    private GameObject currentWeapon;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -156,6 +165,61 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnWeaponSwitch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            int weaponIndex = -1;
+
+            // Try to read an integer value from the action value
+            try
+            {
+                weaponIndex = context.ReadValue<int>();
+            }
+            catch
+            {
+                // Try reading as float and convert
+                try
+                {
+                    float f = context.ReadValue<float>();
+                    weaponIndex = Mathf.RoundToInt(f);
+                }
+                catch
+                {
+                    // Fallback: inspect control's display name or control name
+                    if (context.control != null)
+                    {
+                        int parsed;
+                        if (int.TryParse(context.control.displayName, out parsed))
+                        {
+                            weaponIndex = parsed;
+                        }
+                        else if (int.TryParse(context.control.name, out parsed))
+                        {
+                            weaponIndex = parsed;
+                        }
+                    }
+                }
+            }
+
+            switch (weaponIndex)
+            {
+                case 1:
+                    EquipWeapon(weaponPrefab1);
+                    break;
+                case 2:
+                    EquipWeapon(weaponPrefab2);
+                    break;
+                case 3:
+                    EquipWeapon(weaponPrefab3);
+                    break;
+                default:
+                    Debug.Log($"Weapon switch: Unrecognized input ({weaponIndex}).");
+                    break;
+            }
+        }
+    }
+
     private IEnumerator ResetFaceMoveDirectionAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -215,6 +279,41 @@ public class PlayerController : MonoBehaviour
             audioSource.pitch = 1.0f + Random.Range(-pitchVariation, pitchVariation);
             audioSource.PlayOneShot(shootSound);
         }
+    }
+
+    private void EquipWeapon(GameObject prefab)
+    {
+        if (weaponPoint == null)
+        {
+            Debug.LogWarning("Weapon point not assigned!");
+            return;
+        }
+
+        // Remove existing weapon
+        if (currentWeapon != null)
+        {
+            Destroy(currentWeapon);
+            currentWeapon = null;
+        }
+
+        if (prefab == null)
+        {
+            Debug.Log("No weapon prefab assigned for this slot.");
+            return;
+        }
+
+        currentWeapon = Instantiate(prefab, weaponPoint);
+        currentWeapon.transform.localPosition = Vector3.zero;
+        currentWeapon.transform.localRotation = Quaternion.identity;
+
+        // If the new weapon contains a child named "FirePoint", use that as the fire point
+        Transform newFire = currentWeapon.transform.Find("FirePoint");
+        if (newFire != null)
+        {
+            firePoint = newFire;
+        }
+
+        Debug.Log($"Equipped weapon: {prefab.name}");
     }
 
     // Public getters for UI

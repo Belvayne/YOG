@@ -145,6 +145,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Switch Weapon"",
+                    ""type"": ""Value"",
+                    ""id"": ""12a2e283-c22c-410a-9416-02c00654e186"",
+                    ""expectedControlType"": ""Integer"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -312,6 +321,39 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3627724-8bbd-43f8-8bb2-7be6e0f44915"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""735cf3a6-64ea-4c36-a4b9-18df2ccc1aa4"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e538480b-9dda-478d-9851-01f7e4be9054"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -396,6 +438,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Gameplay_Shoot = m_Gameplay.FindAction("Shoot", throwIfNotFound: true);
         m_Gameplay_Aim = m_Gameplay.FindAction("Aim", throwIfNotFound: true);
         m_Gameplay_Reload = m_Gameplay.FindAction("Reload", throwIfNotFound: true);
+        m_Gameplay_SwitchWeapon = m_Gameplay.FindAction("Switch Weapon", throwIfNotFound: true);
         // CameraControls
         m_CameraControls = asset.FindActionMap("CameraControls", throwIfNotFound: true);
         m_CameraControls_MouseZoom = m_CameraControls.FindAction("MouseZoom", throwIfNotFound: true);
@@ -487,6 +530,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Shoot;
     private readonly InputAction m_Gameplay_Aim;
     private readonly InputAction m_Gameplay_Reload;
+    private readonly InputAction m_Gameplay_SwitchWeapon;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -522,6 +566,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/Reload".
         /// </summary>
         public InputAction @Reload => m_Wrapper.m_Gameplay_Reload;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/SwitchWeapon".
+        /// </summary>
+        public InputAction @SwitchWeapon => m_Wrapper.m_Gameplay_SwitchWeapon;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -566,6 +614,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @SwitchWeapon.started += instance.OnSwitchWeapon;
+            @SwitchWeapon.performed += instance.OnSwitchWeapon;
+            @SwitchWeapon.canceled += instance.OnSwitchWeapon;
         }
 
         /// <summary>
@@ -595,6 +646,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @SwitchWeapon.started -= instance.OnSwitchWeapon;
+            @SwitchWeapon.performed -= instance.OnSwitchWeapon;
+            @SwitchWeapon.canceled -= instance.OnSwitchWeapon;
         }
 
         /// <summary>
@@ -784,6 +838,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReload(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Switch Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwitchWeapon(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "CameraControls" which allows adding and removing callbacks.

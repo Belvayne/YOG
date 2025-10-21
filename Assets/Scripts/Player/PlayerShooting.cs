@@ -42,9 +42,6 @@ public class PlayerShooting : MonoBehaviour
     [SerializeField] private float rotateToCameraSpeed = 10f;
     private Quaternion? targetRotation = null;
 
-    private bool pendingShot = false;
-    private Vector3 pendingBulletDirection;
-
     void Start()
     {
         // Initialize ammo
