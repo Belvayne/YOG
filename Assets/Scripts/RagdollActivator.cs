@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class RagdollActivator : MonoBehaviour
 {
@@ -57,5 +58,25 @@ public class RagdollActivator : MonoBehaviour
         {
             closestBody.AddForce(hitForce, ForceMode.Impulse);
         }
+
+        // Start sinking and destroy coroutine
+        StartCoroutine(SinkAndDestroyCoroutine());
+    }
+
+    private IEnumerator SinkAndDestroyCoroutine()
+    {
+        yield return new WaitForSeconds(10f);
+        float sinkDuration = 2f;
+        float elapsed = 0f;
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + Vector3.down * -2f; // Sink 2 units down
+        while (elapsed < sinkDuration)
+        {
+            transform.position = Vector3.Lerp(startPos, endPos, elapsed / sinkDuration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = endPos;
+        Destroy(gameObject);
     }
 }

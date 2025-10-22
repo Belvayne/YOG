@@ -12,6 +12,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private KillCounter killCounter;
     private bool isDead = false;
 
     private float lastAttackTime = -Mathf.Infinity;
@@ -20,6 +21,7 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+        killCounter = GameObject.FindGameObjectWithTag("KillCounter")?.GetComponent<KillCounter>();
     }
 
     // Update is called once per frame
@@ -50,7 +52,6 @@ public class EnemyController : MonoBehaviour
             //    Quaternion targetRotation = Quaternion.LookRotation(direction);
             //    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             //}
-            //}
         }
     }
 
@@ -78,6 +79,7 @@ public class EnemyController : MonoBehaviour
             {
                 ragdoll.ActivateRagdoll(hitPoint, hitForce);
             }
+            killCounter.AddKill();
         }
     }
 }
