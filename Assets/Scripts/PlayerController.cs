@@ -71,13 +71,13 @@ public class PlayerController : MonoBehaviour
         currentAmmo = maxAmmo;
 
         // Create fire point if not assigned
-        if (firePoint == null)
-        {
-            GameObject firePointObj = new GameObject("FirePoint");
-            firePointObj.transform.SetParent(transform);
-            firePointObj.transform.localPosition = new Vector3(0, 1.5f, 1f);
-            firePoint = firePointObj.transform;
-        }
+        //if (firePoint == null)
+        //{
+        //    GameObject firePointObj = new GameObject("FirePoint");
+        //    firePointObj.transform.SetParent(transform);
+        //    firePointObj.transform.localPosition = new Vector3(0, 1.5f, 1f);
+        //    firePoint = firePointObj.transform;
+        //}
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -275,8 +275,9 @@ public class PlayerController : MonoBehaviour
         currentWeapon.transform.localPosition = Vector3.zero;
         currentWeapon.transform.localRotation = Quaternion.identity;
 
-        // If the new weapon contains a child named "FirePoint", use that as the fire point
+        // If the new weapon contains a child named "FiringPoint", use that as the fire point
         Transform newFire = currentWeapon.transform.Find("FiringPoint");
+        Debug.Log($"FiringPoint: {newFire}");
         if (newFire != null)
         {
             firePoint = newFire;
