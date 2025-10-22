@@ -100,6 +100,17 @@ public class Bullet : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
+        var ragdollPhysics = collision.collider.GetComponentInParent<RagdollActivator>();
+        if (ragdollPhysics != null)
+        {
+            Vector3 hitPos = collision.contacts[0].point;
+            Vector3 hitDir = transform.forward; // or collision.relativeVelocity.normalized
+            float forcePower = 100f; // tweak for comedic effect
+
+            ragdollPhysics.ActivateRagdoll(hitPos, hitDir * forcePower);
+            Destroy(gameObject); // destroy bullet
+        }
+
         if (hasHit) return;
         
         // Check if we should hit this object
