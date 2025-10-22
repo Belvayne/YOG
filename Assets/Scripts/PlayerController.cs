@@ -169,52 +169,21 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            int weaponIndex = -1;
+            var key = context.control.displayName;
 
-            // Try to read an integer value from the action value
-            try
+            switch (key)
             {
-                weaponIndex = context.ReadValue<int>();
-            }
-            catch
-            {
-                // Try reading as float and convert
-                try
-                {
-                    float f = context.ReadValue<float>();
-                    weaponIndex = Mathf.RoundToInt(f);
-                }
-                catch
-                {
-                    // Fallback: inspect control's display name or control name
-                    if (context.control != null)
-                    {
-                        int parsed;
-                        if (int.TryParse(context.control.displayName, out parsed))
-                        {
-                            weaponIndex = parsed;
-                        }
-                        else if (int.TryParse(context.control.name, out parsed))
-                        {
-                            weaponIndex = parsed;
-                        }
-                    }
-                }
-            }
-
-            switch (weaponIndex)
-            {
-                case 1:
+                case "1":
                     EquipWeapon(weaponPrefab1);
                     break;
-                case 2:
+                case "2":
                     EquipWeapon(weaponPrefab2);
                     break;
-                case 3:
+                case "3":
                     EquipWeapon(weaponPrefab3);
                     break;
                 default:
-                    Debug.Log($"Weapon switch: Unrecognized input ({weaponIndex}).");
+                    Debug.Log($"Weapon switch: Unrecognized input ({key}).");
                     break;
             }
         }
@@ -307,10 +276,11 @@ public class PlayerController : MonoBehaviour
         currentWeapon.transform.localRotation = Quaternion.identity;
 
         // If the new weapon contains a child named "FirePoint", use that as the fire point
-        Transform newFire = currentWeapon.transform.Find("FirePoint");
+        Transform newFire = currentWeapon.transform.Find("FiringPoint");
         if (newFire != null)
         {
             firePoint = newFire;
+            Debug.Log("Fire point updated to new weapon's FiringPoint.");
         }
 
         Debug.Log($"Equipped weapon: {prefab.name}");
