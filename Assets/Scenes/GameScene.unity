@@ -209,11 +209,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 75
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -237,8 +237,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.12733579, y: 0.05178567, z: -0.006657518, w: 0.9904845}
-  m_LocalPosition: {x: 0, y: 5.447058, z: -9.537169}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -589,6 +589,7 @@ GameObject:
   - component: {fileID: 475580410}
   - component: {fileID: 475580409}
   - component: {fileID: 475580413}
+  - component: {fileID: 475580414}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -732,6 +733,38 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &475580414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475580408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: bcaceb239b6f7be4b854b20492edc52c, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &608725113
 GameObject:
   m_ObjectHideFlags: 0
@@ -2250,7 +2283,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1303228332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2263,44 +2296,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17e5697e6f913f4b986f456bbd21eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 547171355520177318, guid: b2bf90b34cde28941b8344773d024757, type: 3}
-  spawnInterval: 1
-  maxEnemies: 50
-  spawnOnStart: 1
-  continuousSpawning: 1
+  enemyPrefab: {fileID: 141067727589270872, guid: 4b03549bb0ad0a34fa4ab663dde582f6, type: 3}
   spawnPoints:
   - {fileID: 1938858441}
   - {fileID: 2033257706}
   - {fileID: 1585105145}
-  useRandomSpawnPoints: 1
-  spawnRadius: 20
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
-  spawnAreaCenter: {x: 0, y: 0, z: 0}
-  spawnAreaSize: {x: 20, y: 0, z: 20}
-  useSpawnArea: 0
-  randomizeEnemyRotation: 1
-  enemyYOffset: 0
-  addMovementScript: 1
-  useNavMesh: 0
-  enemyMoveSpeed: 3
-  enemyDetectionRange: 10
-  enemyAttackRange: 2
-  useWaves: 0
-  enemiesPerWave: 5
-  waveDelay: 5
-  currentWave: 0
-  maxWaves: 10
-  OnEnemySpawned:
-    m_PersistentCalls:
-      m_Calls: []
-  OnWaveComplete:
-    m_PersistentCalls:
-      m_Calls: []
-  OnAllWavesComplete:
-    m_PersistentCalls:
-      m_Calls: []
+  spawnInterval: 1
+  spawnOnStart: 1
 --- !u!4 &1303228333
 Transform:
   m_ObjectHideFlags: 0
@@ -2595,7 +2597,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1585105144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3034,7 +3036,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1938858440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3217,7 +3219,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2033257705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3500,6 +3502,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 970150610653190611, guid: 4b03549bb0ad0a34fa4ab663dde582f6, type: 3}
+      propertyPath: playerTransform
+      value: 
+      objectReference: {fileID: 1675851287}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -70,8 +70,8 @@ public class KillDebugger : MonoBehaviour
         if (enemySpawner != null)
         {
             debugInfo += $"EnemySpawner Found: YES\n";
-            debugInfo += $"Active Enemies: {enemySpawner.GetActiveEnemyCount()}\n";
-            debugInfo += $"Is Spawning: {enemySpawner.IsSpawning()}\n";
+            //debugInfo += $"Active Enemies: {enemySpawner.GetActiveEnemyCount()}\n";
+            //debugInfo += $"Is Spawning: {enemySpawner.IsSpawning()}\n";
         }
         else
         {

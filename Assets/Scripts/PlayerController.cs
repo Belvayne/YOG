@@ -69,7 +69,20 @@ public class PlayerController : MonoBehaviour
 
         // Initialize ammo
         currentAmmo = maxAmmo;
+        currentWeapon = Instantiate(weaponPrefab1, weaponPoint);
+        currentWeapon.transform.localPosition = Vector3.zero;
+        currentWeapon.transform.localRotation = Quaternion.identity;
 
+        // If the new weapon contains a child named "FiringPoint", use that as the fire point
+        Transform newFire = currentWeapon.transform.Find("FiringPoint");
+        Debug.Log($"FiringPoint: {newFire}");
+        if (newFire != null)
+        {
+            firePoint = newFire;
+            Debug.Log("Fire point updated to new weapon's FiringPoint.");
+        }
+
+        Debug.Log($"Equipped weapon: {weaponPrefab1.name}");
         // Create fire point if not assigned
         //if (firePoint == null)
         //{
