@@ -76,22 +76,22 @@ public class PlayerMovement : MonoBehaviour
         m_Animator.SetBool("IsWalking", isWalking);
 
         // Make character face the camera's yaw so it "rotates with the camera"
-        if (m_CameraTransform != null)
-        {
-            Vector3 cameraYawForward = m_CameraTransform.forward;
-            cameraYawForward.y = 0f;
-            if (cameraYawForward.sqrMagnitude > 0.0001f)
-            {
-                cameraYawForward.Normalize();
-                Vector3 desiredForward = Vector3.RotateTowards(transform.forward, cameraYawForward, turnSpeed * Time.deltaTime, 0f);
-                m_Rotation = Quaternion.LookRotation(desiredForward);
-            }
-        }
-        else if (m_Movement.sqrMagnitude > 0.0001f)
-        {
-            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
-            m_Rotation = Quaternion.LookRotation(desiredForward);
-        }
+        //if (m_CameraTransform != null)
+        //{
+        //    Vector3 cameraYawForward = m_CameraTransform.forward;
+        //    cameraYawForward.y = 0f;
+        //    if (cameraYawForward.sqrMagnitude > 0.0001f)
+        //    {
+        //        cameraYawForward.Normalize();
+        //        Vector3 desiredForward = Vector3.RotateTowards(transform.forward, cameraYawForward, turnSpeed * Time.deltaTime, 0f);
+        //        m_Rotation = Quaternion.LookRotation(desiredForward);
+        //    }
+        //}
+        //else if (m_Movement.sqrMagnitude > 0.0001f)
+        //{
+        //    Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
+        //    m_Rotation = Quaternion.LookRotation(desiredForward);
+        //}
 
         // Ground check
         m_IsGrounded = Physics.Raycast(m_Rigidbody.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f, groundMask, QueryTriggerInteraction.Ignore);

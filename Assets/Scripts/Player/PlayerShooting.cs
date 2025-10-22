@@ -13,17 +13,12 @@ public class PlayerShooting : MonoBehaviour
     public float bulletLifetime = 5f;
     public int maxAmmo = 30;
     public float reloadTime = 1f;
-    
+
     [Header("Input Actions")]
     public InputAction shootAction;
     public InputAction reloadAction;
     public InputAction aimAction;
-    
-    [Header("Aiming")]
-    public Camera playerCamera;
-    public float aimSensitivity = 1f;
-    public float maxAimDistance = 100f;
-    
+
     [Header("Effects")]
     public ParticleSystem muzzleFlash;
     public AudioSource audioSource;
@@ -31,7 +26,7 @@ public class PlayerShooting : MonoBehaviour
     public AudioClip reloadSound;
     [Range(0f, 0.3f)]
     public float pitchVariation = 0.1f; // Random pitch variation for shoot sound
-    
+
     // Private variables
     private float lastFireTime;
     private int currentAmmo;
@@ -39,21 +34,25 @@ public class PlayerShooting : MonoBehaviour
     private bool isAiming = false;
     private Vector3 aimDirection;
     private RaycastHit aimHit;
-    
+
+    public float maxAimDistance = Mathf.Infinity;
+    public LayerMask layersToIgnore;
+    [SerializeField] private Transform playerTransform;
+
+    [SerializeField] private float rotateToCameraSpeed = 10f;
+    private Quaternion? targetRotation = null;
+
     void Start()
     {
         // Initialize ammo
         currentAmmo = maxAmmo;
-        
+
         // Enable input actions
         if (shootAction != null) shootAction.Enable();
         if (reloadAction != null) reloadAction.Enable();
         if (aimAction != null) aimAction.Enable();
-        
-        // Get camera reference
-        if (playerCamera == null)
-            playerCamera = Camera.main;
-        
+
+
         // Create fire point if not assigned
         if (firePoint == null)
         {
@@ -63,13 +62,26 @@ public class PlayerShooting : MonoBehaviour
             firePoint = firePointObj.transform;
         }
     }
-    
+
     void Update()
     {
         HandleInput();
-        UpdateAiming();
+
+        if (playerTransform != null && targetRotation.HasValue)
+        {
+            playerTransform.rotation = Quaternion.Slerp(
+                playerTransform.rotation,
+                targetRotation.Value,
+                rotateToCameraSpeed * Time.deltaTime
+            );
+
+            if (Quaternion.Angle(playerTransform.rotation, targetRotation.Value) < 0.5f)
+            {
+                targetRotation = null;
+            }
+        }
     }
-    
+
     void HandleInput()
     {
         // Shooting
@@ -77,52 +89,27 @@ public class PlayerShooting : MonoBehaviour
         {
             Shoot();
         }
-        
+
         // Reloading
         if (reloadAction != null && reloadAction.triggered && !isReloading && currentAmmo < maxAmmo)
         {
             StartCoroutine(Reload());
         }
-        
+
         // Aiming
         if (aimAction != null)
         {
             isAiming = aimAction.IsPressed();
         }
     }
-    
-    void UpdateAiming()
-    {
-        if (playerCamera != null)
-        {
-            // Create ray from camera center
-            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            
-            // Cast ray to find aim point
-            if (Physics.Raycast(ray, out aimHit, maxAimDistance))
-            {
-                aimDirection = (aimHit.point - firePoint.position).normalized;
-            }
-            else
-            {
-                // If no hit, aim in camera forward direction
-                aimDirection = playerCamera.transform.forward;
-            }
-        }
-        else
-        {
-            // Fallback to transform forward
-            aimDirection = transform.forward;
-        }
-    }
-    
+
     bool CanShoot()
     {
-        return !isReloading && 
-               currentAmmo > 0 && 
+        return !isReloading &&
+               currentAmmo > 0 &&
                Time.time >= lastFireTime + fireRate;
     }
-    
+
     void Shoot()
     {
         if (bulletPrefab == null)
@@ -130,30 +117,63 @@ public class PlayerShooting : MonoBehaviour
             Debug.LogWarning("No bullet prefab assigned!");
             return;
         }
-        
-        // Create bullet
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.LookRotation(aimDirection));
-        
-        // Set bullet velocity
+
+        Camera mainCam = Camera.main;
+        Vector3 bulletDirection;
+
+        if (mainCam != null)
+        {
+            aimDirection = mainCam.transform.forward;
+
+            // Raycast from camera position in camera's forward direction, ignoring LayersToIgnore
+            if (Physics.Raycast(mainCam.transform.position, aimDirection, out aimHit, maxAimDistance, ~layersToIgnore))
+            {
+                Debug.Log($"Raycast hit: {aimHit.collider.gameObject.name} at {aimHit.point}");
+                // Set bullet direction towards hit point
+                bulletDirection = (aimHit.point - firePoint.position).normalized;
+            }
+            else
+            {
+                Debug.Log("Raycast did not hit anything.");
+                bulletDirection = aimDirection;
+            }
+        }
+        else
+        {
+            bulletDirection = transform.forward;
+        }
+
+        SetTargetRotationToCamera();
+
+        // Spawn the bullet
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.LookRotation(bulletDirection));
+
+        // Add velocity
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
         {
-            bulletRb.linearVelocity = aimDirection * bulletSpeed;
+            bulletRb.linearVelocity = bulletDirection * bulletSpeed;
         }
-        
-        // Set bullet lifetime
-        Destroy(bullet, bulletLifetime);
-        
-        // Update ammo and fire time
-        //currentAmmo--;
+
         lastFireTime = Time.time;
-        
-        // Play effects
         PlayShootEffects();
-        
-        Debug.Log($"Shot fired! Ammo remaining: {currentAmmo}");
+
+        Debug.Log($"Shot fired in direction {bulletDirection}");
     }
-    
+
+    void SetTargetRotationToCamera()
+    {
+        if (playerTransform != null)
+        {
+            Vector3 lookDir = Camera.main.transform.forward;
+            lookDir.y = 0f;
+            if (lookDir.sqrMagnitude > 0.001f)
+            {
+                targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
+            }
+        }
+    }
+
     void PlayShootEffects()
     {
         // Muzzle flash

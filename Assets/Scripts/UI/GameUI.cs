@@ -130,7 +130,6 @@ public class GameUI : MonoBehaviour
         {
             string killText = $"Kills: {killCounter.GetCurrentKills()}/{killCounter.GetTargetKills()}";
             killCountText.text = killText;
-            Debug.Log($"GameUI: Updated kill text to: {killText}");
         }
         else
         {
@@ -142,7 +141,6 @@ public class GameUI : MonoBehaviour
         {
             float progress = killCounter.GetKillProgress();
             killProgressBar.value = progress;
-            Debug.Log($"GameUI: Updated kill progress bar to: {progress}");
         }
         else
         {
@@ -154,7 +152,6 @@ public class GameUI : MonoBehaviour
         {
             bool targetReached = killCounter.IsTargetReached();
             levelCompleteText.gameObject.SetActive(targetReached);
-            Debug.Log($"GameUI: Level complete text active: {targetReached}");
         }
         else
         {

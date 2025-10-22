@@ -354,9 +354,7 @@ public class LevelManager : MonoBehaviour
         {
             mainMenuButton.onClick.RemoveAllListeners();
             mainMenuButton.onClick.AddListener(LoadMainMenu);
-        }
-        
-        Debug.Log("Pause menu buttons wired up!");
+        }        
     }
     
     public void TogglePause()
