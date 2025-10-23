@@ -62,16 +62,16 @@ public class RagdollActivator : MonoBehaviour
         StartCoroutine(StopMomentum());
 
         // Start sinking and destroy coroutine
-        StartCoroutine(SinkAndDestroyCoroutine());
+        StartCoroutine(RiseAndDestroyCoroutine());
     }
 
-    private IEnumerator SinkAndDestroyCoroutine()
+    private IEnumerator RiseAndDestroyCoroutine()
     {
         yield return new WaitForSeconds(10f);
         float sinkDuration = 2f;
         float elapsed = 0f;
         Vector3 startPos = transform.position;
-        Vector3 endPos = startPos + Vector3.down * -2f; // Sink 2 units down
+        Vector3 endPos = startPos + Vector3.down * -2f; // Rise 2 units up
         foreach (var rb in ragdollBodies)
         {
             rb.interpolation = RigidbodyInterpolation.Interpolate;

@@ -3,7 +3,37 @@ guid: e4f98481ab8394c4099d9166a5de4600
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_blinn1
+    second: {fileID: 2100000, guid: d438895d0f921f64cad3cde082388ef7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_blinn3
+    second: {fileID: 2100000, guid: 88cddbddd08c8ba43899f80fa0b26d2e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_blinn4
+    second: {fileID: 2100000, guid: a0ed2315a82552d4f861dd3d5f0ed228, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_lambert2
+    second: {fileID: 2100000, guid: cd5780af8b71c6b4bb27a0480d437049, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_lambert7
+    second: {fileID: 2100000, guid: 3696ad30b2ed0da4da8a5fbe5ddbdbcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pois_2_Animation_3_3_lambert9
+    second: {fileID: 2100000, guid: 14c37593809ca1e47b1866b33e0ee1c2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
