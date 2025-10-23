@@ -58,6 +58,8 @@ public class RagdollActivator : MonoBehaviour
         {
             closestBody.AddForce(hitForce, ForceMode.Impulse);
         }
+        // Start coroutine to stop momentum after 5 seconds
+        StartCoroutine(StopMomentum());
 
         // Start sinking and destroy coroutine
         StartCoroutine(SinkAndDestroyCoroutine());
@@ -70,6 +72,10 @@ public class RagdollActivator : MonoBehaviour
         float elapsed = 0f;
         Vector3 startPos = transform.position;
         Vector3 endPos = startPos + Vector3.down * -2f; // Sink 2 units down
+        foreach (var rb in ragdollBodies)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
         while (elapsed < sinkDuration)
         {
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / sinkDuration);
@@ -78,5 +84,16 @@ public class RagdollActivator : MonoBehaviour
         }
         transform.position = endPos;
         Destroy(gameObject);
+    }
+
+    private IEnumerator StopMomentum()
+    {
+        yield return new WaitForSeconds(5f);
+
+        foreach (var rb in ragdollBodies)
+        {
+            rb.interpolation = RigidbodyInterpolation.None;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+        }
     }
 }
