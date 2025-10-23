@@ -5,7 +5,7 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] private float currentHealth = 100f;
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float moveSpeed = 2.5f;
+    [SerializeField] private float moveSpeed = 3.5f;
     //[SerializeField] private float detectionRange = 15f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1.5f;
@@ -68,18 +68,29 @@ public class EnemyController : MonoBehaviour
     // Call this method when the enemy takes damage
     public void TakeDamage(Vector3 hitPoint, Vector3 hitForce, float damage)
     {
-        currentHealth -= damage;
-        if (currentHealth <= 0f)
+        if (!isDead)
         {
-            isDead = true;
-            NavMeshAgent agent = GetComponent<NavMeshAgent>();
-            Destroy(agent);
+            currentHealth -= damage;
+            if (currentHealth <= 0f)
+            {
+                isDead = true;
+                NavMeshAgent agent = GetComponent<NavMeshAgent>();
+                Destroy(agent);
+                var ragdoll = GetComponent<RagdollActivator>();
+                if (ragdoll != null)
+                {
+                    ragdoll.ActivateRagdoll(hitPoint, hitForce);
+                }
+                killCounter.AddKill();
+            }
+        }
+        else
+        {
             var ragdoll = GetComponent<RagdollActivator>();
             if (ragdoll != null)
             {
                 ragdoll.ActivateRagdoll(hitPoint, hitForce);
             }
-            killCounter.AddKill();
         }
     }
 }
