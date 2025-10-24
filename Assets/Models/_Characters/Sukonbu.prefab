@@ -91,9 +91,6 @@ PrefabInstance:
       addedObject: {fileID: 672455300266992898}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cc25d667f96681d41b791861bee79547, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2582223055174970434}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cc25d667f96681d41b791861bee79547, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3256052736986969814}
     - targetCorrespondingSourceObject: {fileID: 3475453722168101441, guid: cc25d667f96681d41b791861bee79547, type: 3}
       insertIndex: -1
@@ -308,29 +305,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &2582223055174970434
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 141067727589270872}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 0.66
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!195 &3256052736986969814
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -341,7 +315,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.22
-  m_Speed: 10
+  m_Speed: 5
   m_Acceleration: 10
   avoidancePriority: 50
   m_AngularSpeed: 360
