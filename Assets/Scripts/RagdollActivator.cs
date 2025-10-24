@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class RagdollActivator : MonoBehaviour
 {
@@ -56,6 +57,43 @@ public class RagdollActivator : MonoBehaviour
         if (closestBody != null)
         {
             closestBody.AddForce(hitForce, ForceMode.Impulse);
+        }
+        // Start coroutine to stop momentum after 5 seconds
+        StartCoroutine(StopMomentum());
+
+        // Start sinking and destroy coroutine
+        StartCoroutine(RiseAndDestroyCoroutine());
+    }
+
+    private IEnumerator RiseAndDestroyCoroutine()
+    {
+        yield return new WaitForSeconds(10f);
+        float sinkDuration = 2f;
+        float elapsed = 0f;
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + Vector3.down * -2f; // Rise 2 units up
+        foreach (var rb in ragdollBodies)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+        while (elapsed < sinkDuration)
+        {
+            transform.position = Vector3.Lerp(startPos, endPos, elapsed / sinkDuration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = endPos;
+        Destroy(gameObject);
+    }
+
+    private IEnumerator StopMomentum()
+    {
+        yield return new WaitForSeconds(5f);
+
+        foreach (var rb in ragdollBodies)
+        {
+            rb.interpolation = RigidbodyInterpolation.None;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
         }
     }
 }
