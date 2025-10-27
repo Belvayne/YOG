@@ -69,6 +69,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -78,11 +82,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_19343dd9e4ff4255819c63345d646644_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 3c7a1689a3f51ff40a26a043f097dc8a, type: 3}
+        m_Texture: {fileID: 2800000, guid: b1622921d97962f4485549f30b56ce6d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_5a0eee13dec94ae38377607c0ccb2a0d_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 3c7a1689a3f51ff40a26a043f097dc8a, type: 3}
+        m_Texture: {fileID: 2800000, guid: b1622921d97962f4485549f30b56ce6d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -115,8 +119,8 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DisolveSlider1: 0
-    - _DisolveSlider2: 0
+    - _DisolveSlider1: 0.202
+    - _DisolveSlider2: 0.166
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
@@ -126,6 +130,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
