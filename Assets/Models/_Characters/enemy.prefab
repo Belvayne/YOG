@@ -1453,7 +1453,6 @@ GameObject:
   m_Component:
   - component: {fileID: 926652862841015836}
   - component: {fileID: 2154459534471189695}
-  - component: {fileID: 5019227111301939140}
   - component: {fileID: 6151471975369739617}
   - component: {fileID: 437386224191339520}
   - component: {fileID: 6199273327976213040}
@@ -1513,27 +1512,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5019227111301939140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547171355520177318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f29e59749f7e3f245b26a1282f6caaf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  currentHealth: 100
-  maxHealth: 100
-  moveSpeed: 3.5
-  attackRange: 2
-  attackCooldown: 1.5
-  attackDamage: 10
-  playerTransform: {fileID: 0}
-  rotationSpeed: 5
-  killCounter: {fileID: 0}
 --- !u!114 &6151471975369739617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1673,6 +1651,7 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   rotationSpeed: 5
   killCounter: {fileID: 0}
+  explosionEffect: {fileID: 4957287117012756304, guid: 9fd08b089d4212344b927ec6963499d4, type: 3}
 --- !u!1 &557164447141937013
 GameObject:
   m_ObjectHideFlags: 0
