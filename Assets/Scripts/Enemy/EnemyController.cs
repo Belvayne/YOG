@@ -40,8 +40,8 @@ public class EnemyController : MonoBehaviour, IDamageable
             Debug.Log($"{gameObject.name} has died.");
             Die();
             var ragdoll = GetComponent<RagdollActivator>();
-            //if (ragdoll != null)
-            //    ragdoll.ActivateRagdoll(hitPoint, hitForce);
+            if (ragdoll != null)
+                ragdoll.ActivateRagdoll(hitPoint, hitForce);
         }
     }
 
