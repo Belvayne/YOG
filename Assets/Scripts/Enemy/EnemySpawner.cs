@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private bool spawnOnStart = true;
@@ -48,10 +48,11 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        if (enemyPrefab == null || spawnPoints == null || spawnPoints.Length == 0)
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0 || spawnPoints == null || spawnPoints.Length == 0)
             return;
 
-        int index = Random.Range(0, spawnPoints.Length);
-        Instantiate(enemyPrefab, spawnPoints[index].position, spawnPoints[index].rotation);
+        int spawnIndex = Random.Range(0, spawnPoints.Length);
+        int prefabIndex = Random.Range(0, enemyPrefabs.Length);
+        Instantiate(enemyPrefabs[prefabIndex], spawnPoints[spawnIndex].position, spawnPoints[spawnIndex].rotation);
     }
 }

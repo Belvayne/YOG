@@ -20,41 +20,39 @@ public class SSRBLogic : EnemyController
     private IEnumerator SelfDestructCoroutine()
     {
         yield return new WaitForSeconds(3f);
-        Debug.Log("KABOOOOM");
+        Vector3 explosionPos = GetRagdollCenter();
 
         // Instantiate explosion effect
         if (explosionEffect != null)
         {
             if (explosionEffect != null)
             {
-                Vector3 explosionPos = GetRagdollCenter();
                 Instantiate(explosionEffect, explosionPos, Quaternion.identity);
             }
         }
 
         // Explosion parameters
-        float explosionRadius = 5f;
-        float explosionForce = 2000f;
+        float explosionRadius = 2.5f;
+        float explosionForce = 100f;
         float explosionDamage = 100f;
-        Vector3 explosionPosition = transform.position;
 
         // Find all colliders in the explosion radius
-        Collider[] colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);
+        Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
         foreach (Collider hit in colliders)
         {
             // Apply damage to IDamageable entities
             IDamageable damageable = hit.GetComponent<IDamageable>();
             if (damageable != null && damageable != this)
             {
-                Vector3 forceDir = (hit.transform.position - explosionPosition).normalized * explosionForce;
-                damageable.TakeDamage(explosionPosition, forceDir, explosionDamage);
+                Vector3 forceDir = (hit.transform.position - explosionPos).normalized * explosionForce;
+                damageable.TakeDamage(explosionPos, forceDir, explosionDamage);
             }
 
             // Apply force to rigidbodies
             Rigidbody rb = hit.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, 1f, ForceMode.Impulse);
+                rb.AddExplosionForce(explosionForce, explosionPos, explosionRadius, 1f, ForceMode.Impulse);
             }
         }
 
@@ -71,7 +69,7 @@ public class SSRBLogic : EnemyController
             {
                 sum += rb.worldCenterOfMass;
             }
-            return (sum / ragdoll.ragdollBodies.Length) + (Vector3.up * 2.5f);
+            return (sum / ragdoll.ragdollBodies.Length);
         }
         return transform.position;
     }
