@@ -1061,8 +1061,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3368689411363464933}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.051354, y: 0.92058223, z: -0.1295833, w: -0.36482772}
+  m_LocalPosition: {x: 45.246933, y: 2.339246, z: 11.061804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1099,11 +1099,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 5000
-  field of view: 40
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 75
   orthographic: 0
-  orthographic size: 10
+  orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1386,7 +1386,7 @@ MonoBehaviour:
   jumpHeight: 2
   gravity: -9.8
   shouldFaceMoveDirection: 1
-  bulletPrefab: {fileID: 3859019856354466425, guid: 0388ab974c643254fa096bb50d3487ca, type: 3}
+  bulletPrefab: {fileID: 3859019856354466425, guid: 79f4593814eadfd4c91bfcfb1e6084f2, type: 3}
   firePoint: {fileID: 0}
   fireRate: 0.5
   bulletSpeed: 40
@@ -1399,9 +1399,9 @@ MonoBehaviour:
   reloadSound: {fileID: 0}
   pitchVariation: 0.3
   weaponPoint: {fileID: 4117681079376038569}
-  weaponPrefab1: {fileID: 6234406642143102051, guid: 939884053f024c344ab369d39e8c4299, type: 3}
-  weaponPrefab2: {fileID: 6232249536491816736, guid: 5d3ae42ecab94aa4797485211c0cc5eb, type: 3}
-  weaponPrefab3: {fileID: 8739695478720042674, guid: ddb538473a82bea489868b9f52ade6df, type: 3}
+  weaponPrefab1: {fileID: 6234406642143102051, guid: 037aa278c48bcfb4bb02a14806dcc903, type: 3}
+  weaponPrefab2: {fileID: 6232249536491816736, guid: 2a734ca480845b0498306516e1c44b5b, type: 3}
+  weaponPrefab3: {fileID: 8739695478720042674, guid: a8cd4a25ae9c58a4ca653c161eaa2566, type: 3}
   maxAimDistance: Infinity
   layersToIgnore:
     serializedVersion: 2
@@ -1420,7 +1420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9431bd25299e81f48890fa2637041194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooting
-  bulletPrefab: {fileID: 3859019856354466425, guid: 0388ab974c643254fa096bb50d3487ca, type: 3}
+  bulletPrefab: {fileID: 3859019856354466425, guid: 79f4593814eadfd4c91bfcfb1e6084f2, type: 3}
   firePoint: {fileID: 0}
   fireRate: 0.5
   bulletSpeed: 40
