@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17e5697e6f913f4b986f456bbd21eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 141067727589270872, guid: 4b03549bb0ad0a34fa4ab663dde582f6, type: 3}
+  enemyPrefabs:
+  - {fileID: 8605809186903359408, guid: 730e3e1352f2bfa4889f0b976fb5e4cf, type: 3}
+  - {fileID: 24651745234407279, guid: 7fc82138281d0ab4abf62ed102c6ad29, type: 3}
   spawnPoints:
   - {fileID: 0}
   - {fileID: 0}
