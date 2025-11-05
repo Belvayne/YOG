@@ -11,7 +11,6 @@ public class EnemyController : MonoBehaviour, IDamageable
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private KillCounter killCounter;
 
     private bool isDead = false;
     private float lastAttackTime = -Mathf.Infinity;
@@ -20,7 +19,6 @@ public class EnemyController : MonoBehaviour, IDamageable
     void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
-        killCounter = GameObject.FindGameObjectWithTag("KillCounter")?.GetComponent<KillCounter>();
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -50,8 +48,14 @@ public class EnemyController : MonoBehaviour, IDamageable
         if (isDead) return;
 
         isDead = true;
-        killCounter?.AddKill();
         Destroy(agent);
+        
+        // Notify LevelManager of the kill
+        var levelManager = FindObjectOfType<LevelManager>();
+        if (levelManager != null)
+        {
+            levelManager.OnEnemyKilled();
+        }
     }
 
     public bool IsDead() => isDead;

@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Editor/EndlessModeUI.uss?fileID=7433441132597879392&amp;guid=2ee9069769b123b4a99e59ee1fd84b55&amp;type=3#EndlessModeUI" />
+    <ui:ProgressBar value="22" title="HYPE METER" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); color: rgb(109, 229, 255); font-size: 40px; -unity-text-align: lower-center; -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); top: 2%; width: 50%; left: 25%; right: 25%;" />
+    <ui:GroupBox style="right: 10px; top: 5%; -unity-text-align: upper-right;">
+        <ui:Label text="Enemies defeated" name="KillCountLabel" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); color: rgb(109, 229, 255); font-size: 30px; -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255);" />
+        <ui:Label text="0" name="KillCountText" style="color: rgb(109, 229, 255); font-size: 50px; -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); -unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); -unity-font-style: bold;" />
+    </ui:GroupBox>
+    <ui:Label style="-unity-text-align: middle-left; position: absolute; bottom: 0; right: 0; top: 0; left: 0; background-image: url(&quot;project://database/Assets/UI/Crosshair/Bijou%20crosshair.png?fileID=2800000&amp;guid=657e5199f3ad4c64da70f9d0cf1caa46&amp;type=3#Bijou crosshair&quot;); background-size: 30px 30px;" />
+</ui:UXML>
