@@ -1,0 +1,16 @@
+.character-button {
+    width: 175px;
+    height: 175px;
+    border-radius: 50%;
+    border-width: 6px;
+    border-color: #6DE5FF;
+    background-size: 300%;         /* "Zoom" the image in */
+    background-repeat: no-repeat;
+    background-position: 50% 30%;  /* Move to center face */
+    background-image: none;
+}
+.character-button:hover {
+    border-color: #000080;
+    scale: 1.2;
+    transition: scale 0.15s ease-in-out;
+}

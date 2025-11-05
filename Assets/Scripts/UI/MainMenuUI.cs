@@ -1,6 +1,10 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
+using UnityEngine.Splines; // only if you plan to load a scene
+using UnityEngine.Timeline;
 using UnityEngine.UIElements;
-using UnityEngine.SceneManagement; // only if you plan to load a scene
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -10,23 +14,60 @@ public class MainMenuUI : MonoBehaviour
     private Button characterButton;
     private Button startButton;
     private Button quitButton;
+    private UIDocument UIDocument;
 
-    [SerializeField] private GameObject CameraAnimation;
+    [Header("Cinemachine Spline Settings")]
+    [SerializeField] private CinemachineSplineDolly splineDolly;
+    [SerializeField] private GameObject mainSpline;
+    [SerializeField] private GameObject characterSpline;
+
+    [Header("Character Selector")]
+
+    public Transform characterSpawnpoint;
+    public GameObject selectedCharacter;
+    public GameObject selectedPrefab;
+
+    [SerializeField] private GameObject GuraPrefab;
+    [SerializeField] private GameObject InaPrefab;
+    [SerializeField] private GameObject AmePrefab;
+    [SerializeField] private GameObject KiaraPrefab;
+    [SerializeField] private GameObject CalliePrefab;
+
+    private Button GuraButton;
+    private Button InaButton;
+    private Button AmeButton;
+    private Button KiaraButton;
+    private Button CallieButton;
+    private Button confirmButton;
+
+    private Label characterLabel;
+    private Label titleLabel;
+
+    [SerializeField] private PlayableDirector timelineDirector;
+    [Header("UXML Assets")]
+    public VisualTreeAsset mainMenuUXML;
+    public VisualTreeAsset characterSelectUXML;
 
     void Start()
     {
         // Access root of UIDocument
-        var root = GetComponent<UIDocument>().rootVisualElement;
+        UIDocument = GetComponent<UIDocument>();
+        var root = UIDocument.rootVisualElement;
 
         // Get buttons by their names from your UXML
         characterButton = root.Q<Button>("CharacterSelectButton");
         startButton = root.Q<Button>("StartButton");
         quitButton = root.Q<Button>("QuitButton");
 
+
         // Add click event listeners
         characterButton.clicked += OnCharacterClicked;
         startButton.clicked += OnStartClicked;
         quitButton.clicked += OnQuitClicked;
+
+        // Set selected character to Gura by default
+        selectedCharacter = Instantiate(GuraPrefab, characterSpawnpoint);
+        selectedPrefab = GuraPrefab;
     }
 
     void PlayClick()
@@ -38,9 +79,67 @@ public class MainMenuUI : MonoBehaviour
     {
         PlayClick();
         Debug.Log("Character Select Clicked!");
-        if (CameraAnimation != null)
+        if (timelineDirector != null)
         {
-            CameraAnimation.SetActive(true);
+            PlaySpecificTrack("Animation Main Pos - Character Select");
+        }
+        if (UIDocument != null && characterSelectUXML != null)
+        {
+            UIDocument.visualTreeAsset = characterSelectUXML;
+
+            // Get the new root
+            var newRoot = UIDocument.rootVisualElement;
+
+            // Query buttons by their names in the new UXML
+            GuraButton = newRoot.Q<Button>("GuraButton");
+            InaButton = newRoot.Q<Button>("InaButton");
+            AmeButton = newRoot.Q<Button>("AmeButton");
+            KiaraButton = newRoot.Q<Button>("KiaraButton");
+            CallieButton = newRoot.Q<Button>("CallieButton");
+            confirmButton = newRoot.Q<Button>("CharacterConfirmButton");
+
+            // Query labels
+            characterLabel = newRoot.Q<Label>("CharacterName");
+            titleLabel = newRoot.Q<Label>("CharacterTitle");
+
+            var identity = selectedCharacter.GetComponent<CharacterIdentity>();
+            if (identity != null && identity.data != null)
+            {
+                characterLabel.text = identity.data.characterName;
+                titleLabel.text = identity.data.characterTitle;
+            }
+
+            // Assign click handlers
+            GuraButton.clicked += () => OnCharacterSelected(GuraPrefab);
+            InaButton.clicked += () => OnCharacterSelected(InaPrefab);
+            AmeButton.clicked += () => OnCharacterSelected(AmePrefab);
+            KiaraButton.clicked += () => OnCharacterSelected(KiaraPrefab);
+            CallieButton.clicked += () => OnCharacterSelected(CalliePrefab);
+            confirmButton.clicked += () =>
+            {
+                PlayClick();
+                Debug.Log("Character Confirmed!");
+                UIDocument.visualTreeAsset = mainMenuUXML;
+
+                var root = UIDocument.rootVisualElement;
+
+                splineDolly.Spline = characterSpline.GetComponent<SplineContainer>();
+                if (timelineDirector != null)
+                {
+                    PlaySpecificTrack("Animation Character Select - Main Pos");
+                }
+
+                // Get buttons by their names from your UXML
+                characterButton = root.Q<Button>("CharacterSelectButton");
+                startButton = root.Q<Button>("StartButton");
+                quitButton = root.Q<Button>("QuitButton");
+
+
+                // Add click event listeners
+                characterButton.clicked += OnCharacterClicked;
+                startButton.clicked += OnStartClicked;
+                quitButton.clicked += OnQuitClicked;
+            };
         }
     }
 
@@ -48,7 +147,7 @@ public class MainMenuUI : MonoBehaviour
     {
         PlayClick();
         Debug.Log("Start Game Clicked!");
-        // Example: SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene");
     }
 
     void OnQuitClicked()
@@ -56,5 +155,41 @@ public class MainMenuUI : MonoBehaviour
         PlayClick();
         Debug.Log("Quit Game Clicked!");
         Application.Quit();
+    }
+
+    void OnCharacterSelected(GameObject prefab)
+    {
+        Debug.Log($"Character selected: {prefab}");
+        if (prefab != selectedPrefab && prefab != null)
+        {
+            PlayClick();
+            Destroy(selectedCharacter);
+            selectedCharacter = Instantiate(prefab, characterSpawnpoint);
+            selectedPrefab = prefab;
+
+            var identity = prefab.GetComponent<CharacterIdentity>();
+            if (identity != null && identity.data != null)
+            {
+                characterLabel.text = identity.data.characterName;
+                titleLabel.text = identity.data.characterTitle;
+            }
+        }
+    }
+
+    public void PlaySpecificTrack(string trackName)
+    {
+        if (timelineDirector == null) return;
+
+        var timeline = timelineDirector.playableAsset as TimelineAsset;
+        if (timeline == null) return;
+
+        foreach (var track in timeline.GetOutputTracks())
+        {
+            // Enable only the one you want
+            bool shouldEnable = track.name == trackName;
+            timelineDirector.SetGenericBinding(track, shouldEnable ? timelineDirector.GetGenericBinding(track) : null);
+        }
+
+        timelineDirector.Play();
     }
 }
