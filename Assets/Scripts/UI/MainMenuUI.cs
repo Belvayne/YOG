@@ -16,11 +16,6 @@ public class MainMenuUI : MonoBehaviour
     private Button quitButton;
     private UIDocument UIDocument;
 
-    [Header("Cinemachine Spline Settings")]
-    [SerializeField] private CinemachineSplineDolly splineDolly;
-    [SerializeField] private GameObject mainSpline;
-    [SerializeField] private GameObject characterSpline;
-
     [Header("Character Selector")]
 
     public Transform characterSpawnpoint;
@@ -43,7 +38,11 @@ public class MainMenuUI : MonoBehaviour
     private Label characterLabel;
     private Label titleLabel;
 
+    [Header("Animation Setup")]
     [SerializeField] private PlayableDirector timelineDirector;
+    [SerializeField] private TimelineAsset enterTimeline;
+    [SerializeField] private TimelineAsset exitTimeline;
+
     [Header("UXML Assets")]
     public VisualTreeAsset mainMenuUXML;
     public VisualTreeAsset characterSelectUXML;
@@ -81,7 +80,8 @@ public class MainMenuUI : MonoBehaviour
         Debug.Log("Character Select Clicked!");
         if (timelineDirector != null)
         {
-            PlaySpecificTrack("Animation Main Pos - Character Select");
+            timelineDirector.playableAsset = enterTimeline;
+            timelineDirector.Play();
         }
         if (UIDocument != null && characterSelectUXML != null)
         {
@@ -123,10 +123,10 @@ public class MainMenuUI : MonoBehaviour
 
                 var root = UIDocument.rootVisualElement;
 
-                splineDolly.Spline = characterSpline.GetComponent<SplineContainer>();
                 if (timelineDirector != null)
                 {
-                    PlaySpecificTrack("Animation Character Select - Main Pos");
+                    timelineDirector.playableAsset = exitTimeline;
+                    timelineDirector.Play();
                 }
 
                 // Get buttons by their names from your UXML
@@ -174,22 +174,5 @@ public class MainMenuUI : MonoBehaviour
                 titleLabel.text = identity.data.characterTitle;
             }
         }
-    }
-
-    public void PlaySpecificTrack(string trackName)
-    {
-        if (timelineDirector == null) return;
-
-        var timeline = timelineDirector.playableAsset as TimelineAsset;
-        if (timeline == null) return;
-
-        foreach (var track in timeline.GetOutputTracks())
-        {
-            // Enable only the one you want
-            bool shouldEnable = track.name == trackName;
-            timelineDirector.SetGenericBinding(track, shouldEnable ? timelineDirector.GetGenericBinding(track) : null);
-        }
-
-        timelineDirector.Play();
     }
 }
