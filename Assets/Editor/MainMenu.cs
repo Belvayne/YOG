@@ -101,6 +101,9 @@ public class MainMenu : EditorWindow
             return btn;
         }
 
+        var characterBtn = MakeMenuButton("CHARACTER SELECT");
+        buttons.Add(characterBtn);
+
         var startBtn = MakeMenuButton("START GAME");
         startBtn.clicked += () => { EditorApplication.isPlaying = true; };
         buttons.Add(startBtn);

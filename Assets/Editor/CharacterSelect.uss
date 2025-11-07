@@ -1,0 +1,35 @@
+.character-button {
+    width: 175px;
+    height: 175px;
+    border-radius: 50%;
+    border-width: 6px;
+    border-color: rgb(109, 229, 255);
+    background-size: 300%;
+    background-repeat: no-repeat;
+    background-position: 50% 30%;
+    background-image: none;
+}
+
+.character-button:hover {
+    border-color: rgb(0, 0, 128);
+    scale: 1.2;
+    transition: scale 0.15s ease-in-out;
+}
+
+#PreviousButton {
+    rotate: 180deg;
+}
+
+#NextButton {
+}
+
+.side-scroll-button {
+    width: 175px;
+    height: 175px;
+    /* border-radius: 50%; */
+    /* border-width: 6px;
+    border-color: rgb(109, 229, 255); */
+}
+
+.unity-radio-button {
+}
