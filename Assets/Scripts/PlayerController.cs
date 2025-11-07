@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool shouldFaceMoveDirection = false;
 
     private CharacterController controller;
+    private Animator animator;
     private Vector3 moveInput;
     private Vector3 velocity;
     private bool isSprinting = false;
@@ -97,6 +98,16 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();
         Debug.Log($"Move Input: {moveInput}");
+
+        if (animator)
+        {
+
+        }
+    }
+
+    public void AssignAnimator(Animator newAnimator)
+    {
+        animator = newAnimator;
     }
 
     public void OnJump(InputAction.CallbackContext context)
