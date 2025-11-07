@@ -2289,6 +2289,12 @@ MonoBehaviour:
   characterSpawnpoint: {fileID: 668888366}
   selectedCharacter: {fileID: 0}
   selectedPrefab: {fileID: 0}
+  characterPrefabs:
+  - {fileID: 4224520575895206044, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+  - {fileID: 7922717231836511987, guid: 5fdd16977b1e70b4e93bb46813c3d8ba, type: 3}
+  - {fileID: 7727002167920445649, guid: 761ff4407e14e4941b6247ca284def54, type: 3}
+  - {fileID: 160451386308572239, guid: 521e02753a4302c4cb2c6da268e37c74, type: 3}
+  - {fileID: 4796223292401312460, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
   GuraPrefab: {fileID: 4224520575895206044, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
   InaPrefab: {fileID: 7922717231836511987, guid: 5fdd16977b1e70b4e93bb46813c3d8ba, type: 3}
   AmePrefab: {fileID: 7727002167920445649, guid: 761ff4407e14e4941b6247ca284def54, type: 3}
@@ -2299,6 +2305,7 @@ MonoBehaviour:
   exitTimeline: {fileID: 11400000, guid: eb7a94ed0ba3e9d47a7eef80607d0d6c, type: 2}
   mainMenuUXML: {fileID: 9197481963319205126, guid: f9291d96f1463c848a22d8f8b810ae8f, type: 3}
   characterSelectUXML: {fileID: 9197481963319205126, guid: 6c3a61075659cb245ae2bdf236526a74, type: 3}
+  sideScrollSelectUXML: {fileID: 9197481963319205126, guid: e322333f3ce1aac4aa24d036c9bb95ea, type: 3}
 --- !u!1 &1292748438
 GameObject:
   m_ObjectHideFlags: 0
