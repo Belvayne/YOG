@@ -74,6 +74,7 @@ public class MainMenuUI : MonoBehaviour
         // Set selected character to Gura by default
         selectedCharacter = Instantiate(GuraPrefab, characterSpawnpoint);
         selectedPrefab = GuraPrefab;
+        GameDataManager.Instance.selectedCharacterPrefab = selectedPrefab;
     }
 
     void PlayClick()

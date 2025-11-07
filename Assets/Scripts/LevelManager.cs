@@ -177,7 +177,7 @@ public class LevelManager : MonoBehaviour
         GameObject characterInstance = Instantiate(characterPrefab, playerModel);
         characterInstance.transform.localPosition = Vector3.zero;
         characterInstance.transform.localRotation = Quaternion.identity;
-        var controller = GetComponentInChildren<PlayerController>();
+        var controller = spawnedPlayer.GetComponentInChildren<PlayerController>();
         controller.AssignAnimator(characterInstance.GetComponentInChildren<Animator>());
 
         Debug.Log($"LevelManager: Instantiated character '{characterPrefab.name}' into PlayerModel");
