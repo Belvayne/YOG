@@ -7,7 +7,13 @@ public class LevelManager : MonoBehaviour
 {
     [Header("UI Document")]
     [SerializeField] private UIDocument uiDocument;
-    
+
+    [Header("Player Spawn Settings")]
+    [SerializeField] private Transform playerSpawnPoint;
+    [SerializeField] private GameObject PlayerPrefab;
+
+    private GameObject spawnedPlayer;
+
     [Header("Progress Bar Settings")]
     [SerializeField] private float maxProgress = 100f;
     [SerializeField] private float pointsPerKill = 5f;
@@ -38,6 +44,11 @@ public class LevelManager : MonoBehaviour
     
     void Start()
     {
+        Debug.Log("LevelManager: Loaded character = " + (GameDataManager.Instance.selectedCharacterPrefab != null ? GameDataManager.Instance.selectedCharacterPrefab.name : "None"));
+
+        // Spawn the selected character first
+        SpawnSelectedCharacter();
+
         // Get UI Document if not assigned
         if (uiDocument == null)
         {
@@ -117,7 +128,65 @@ public class LevelManager : MonoBehaviour
         // Set initial cursor state
         SetCursorState(!hideCursorDuringGameplay);
     }
-    
+
+    private void SpawnSelectedCharacter()
+    {
+        // Use fallback if no character is selected
+        GameObject Player = PlayerPrefab;
+
+        // Determine spawn position
+        Vector3 spawnPosition = playerSpawnPoint != null ? playerSpawnPoint.position : Vector3.zero;
+        Quaternion spawnRotation = playerSpawnPoint != null ? playerSpawnPoint.rotation : Quaternion.identity;
+
+        // Spawn the base Player prefab
+        spawnedPlayer = Instantiate(Player, spawnPosition, spawnRotation);
+
+        // Find the PlayerCharacter -> PlayerModel hierarchy
+        Transform playerCharacter = spawnedPlayer.transform.Find("PlayerCharacter");
+
+        if (playerCharacter == null)
+        {
+            Debug.LogError("LevelManager: PlayerCharacter child not found in player prefab! Make sure your Player prefab has a child named 'PlayerCharacter'.");
+            return;
+        }
+
+        Transform playerModel = playerCharacter.Find("PlayerModel");
+
+        if (playerModel == null)
+        {
+            Debug.LogError("LevelManager: PlayerModel child not found under PlayerCharacter! Make sure PlayerCharacter has a child named 'PlayerModel'.");
+            return;
+        }
+
+        // Get the selected character prefab from GameDataManager
+        GameObject characterPrefab = GameDataManager.Instance.selectedCharacterPrefab;
+
+        if (characterPrefab == null)
+        {
+            Debug.LogWarning("LevelManager: No character selected in GameDataManager. Player spawned without character model.");
+            return;
+        }
+
+        // Clear any existing children in PlayerModel
+        foreach (Transform child in playerModel)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Instantiate the selected character model as a child of PlayerModel
+        GameObject characterInstance = Instantiate(characterPrefab, playerModel);
+        characterInstance.transform.localPosition = Vector3.zero;
+        characterInstance.transform.localRotation = Quaternion.identity;
+
+        Debug.Log($"LevelManager: Instantiated character '{characterPrefab.name}' into PlayerModel");
+
+        if (Player == null)
+        {
+            Debug.LogError("LevelManager: No player prefab available to spawn! Please assign a fallback player prefab.");
+            return;
+        }
+    }
+
     void Update()
     {
         // Check for pause input (ESC key)

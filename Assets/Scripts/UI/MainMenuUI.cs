@@ -228,7 +228,7 @@ public class MainMenuUI : MonoBehaviour
     {
         PlayClick();
         Debug.Log("Start Game Clicked!");
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("EndlessMode");
     }
 
     void OnQuitClicked()
@@ -289,6 +289,7 @@ public class MainMenuUI : MonoBehaviour
             Destroy(selectedCharacter);
             selectedCharacter = Instantiate(prefab, characterSpawnpoint);
             selectedPrefab = prefab;
+            GameDataManager.Instance.selectedCharacterPrefab = selectedPrefab;
 
             var identity = prefab.GetComponent<CharacterIdentity>();
             if (identity != null && identity.data != null)
