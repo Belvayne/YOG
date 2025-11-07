@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+
 
 public class LevelManager : MonoBehaviour
 {
@@ -18,11 +20,21 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private bool loopBGM = true;
     [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.5f;
     
+    [Header("Pause Settings")]
+    [SerializeField] private bool hideCursorDuringGameplay = true;
+    
     private ProgressBar hypeMeter;
     private Label killCountText;
+    private GroupBox pauseMenu;
+    private Button resumeButton;
+    private Button settingsButton;
+    private Button restartButton;
+    private Button quitButton;
+    
     private float currentProgress = 0f;
     private float timeSinceLastDecay = 0f;
     private int killCount = 0;
+    private bool isPaused = false;
     
     void Start()
     {
@@ -42,6 +54,36 @@ public class LevelManager : MonoBehaviour
         var root = uiDocument.rootVisualElement;
         hypeMeter = root.Q<ProgressBar>();
         killCountText = root.Q<Label>("KillCountText");
+        pauseMenu = root.Q<GroupBox>("PauseMenu");
+        
+        // Get pause menu buttons
+        if (pauseMenu != null)
+        {
+            resumeButton = pauseMenu.Q<Button>("ResumeButton");
+            settingsButton = pauseMenu.Q<Button>("SettingsButton");
+            restartButton = pauseMenu.Q<Button>("RestartButton");
+            quitButton = pauseMenu.Q<Button>("QuitButton");
+            
+            // Register button callbacks
+            if (resumeButton != null)
+                resumeButton.clicked += ResumeGame;
+            
+            if (settingsButton != null)
+                settingsButton.clicked += OpenSettings;
+            
+            if (restartButton != null)
+                restartButton.clicked += RestartLevel;
+            
+            if (quitButton != null)
+                quitButton.clicked += QuitGame;
+            
+            // Hide pause menu initially
+            pauseMenu.style.display = DisplayStyle.None;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: PauseMenu GroupBox not found in UI Document!");
+        }
         
         if (hypeMeter == null)
         {
@@ -71,18 +113,118 @@ public class LevelManager : MonoBehaviour
         {
             PlayBGM();
         }
+        
+        // Set initial cursor state
+        SetCursorState(!hideCursorDuringGameplay);
     }
     
     void Update()
     {
-        // Decrease progress by 1 point every second
-        timeSinceLastDecay += Time.deltaTime;
-        
-        if (timeSinceLastDecay >= 1f)
+        // Check for pause input (ESC key)
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
+        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
         {
-            DecreaseProgress(pointsLossPerSecond);
-            timeSinceLastDecay = 0f;
+            TogglePause();
         }
+        
+        // Only update game logic when not paused
+        if (!isPaused)
+        {
+            // Decrease progress by 1 point every second
+            timeSinceLastDecay += Time.deltaTime;
+            
+            if (timeSinceLastDecay >= 1f)
+            {
+                DecreaseProgress(pointsLossPerSecond);
+                timeSinceLastDecay = 0f;
+            }
+        }
+    }
+    
+    private void TogglePause()
+    {
+        if (isPaused)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            PauseGame();
+        }
+    }
+    
+    public void PauseGame()
+    {
+        isPaused = true;
+        Time.timeScale = 0f;
+        
+        // Show pause menu
+        if (pauseMenu != null)
+        {
+            pauseMenu.style.display = DisplayStyle.Flex;
+        }
+        
+        // Pause BGM
+        PauseBGM();
+        
+        // Show cursor
+        SetCursorState(true);
+        
+        Debug.Log("LevelManager: Game paused.");
+    }
+    
+    public void ResumeGame()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        
+        // Hide pause menu
+        if (pauseMenu != null)
+        {
+            pauseMenu.style.display = DisplayStyle.None;
+        }
+        
+        // Resume BGM
+        ResumeBGM();
+        
+        // Hide cursor if enabled
+        SetCursorState(!hideCursorDuringGameplay);
+        
+        Debug.Log("LevelManager: Game resumed.");
+    }
+    
+    private void OpenSettings()
+    {
+        Debug.Log("LevelManager: Opening settings... (Not implemented yet)");
+        // TODO: Implement settings menu
+    }
+    
+    private void RestartLevel()
+    {
+        // Reset time scale before reloading
+        Time.timeScale = 1f;
+        
+        // Reload current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+        Debug.Log("LevelManager: Restarting level...");
+    }
+    
+    private void QuitGame()
+    {
+        Debug.Log("LevelManager: Returning to main menu...");
+        
+        // Reset time scale before loading main menu
+        Time.timeScale = 1f;
+        
+        // Load main menu scene
+        SceneManager.LoadScene("MainMenu");
+    }
+    
+    private void SetCursorState(bool visible)
+    {
+        UnityEngine.Cursor.visible = visible;
+        UnityEngine.Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
     
     private void InitializeBGM()
@@ -260,5 +402,29 @@ public class LevelManager : MonoBehaviour
     public bool IsBGMPlaying()
     {
         return bgmAudioSource != null && bgmAudioSource.isPlaying;
+    }
+    
+    public bool IsPaused()
+    {
+        return isPaused;
+    }
+    
+    void OnDestroy()
+    {
+        // Unregister button callbacks to prevent memory leaks
+        if (resumeButton != null)
+            resumeButton.clicked -= ResumeGame;
+        
+        if (settingsButton != null)
+            settingsButton.clicked -= OpenSettings;
+        
+        if (restartButton != null)
+            restartButton.clicked -= RestartLevel;
+        
+        if (quitButton != null)
+            quitButton.clicked -= QuitGame;
+        
+        // Reset time scale when destroyed
+        Time.timeScale = 1f;
     }
 }
