@@ -1,365 +1,149 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using TMPro;
+
 
 public class LevelManager : MonoBehaviour
 {
-    [Header("Level Settings")]
-    public int targetKills = 10;
-    public float levelCompleteDelay = 2f;
-    public bool autoLoadNextLevel = false;
-    public string nextLevelName = "NextLevel";
+    [Header("UI Document")]
+    [SerializeField] private UIDocument uiDocument;
     
-    [Header("Game State")]
-    public bool gameStarted = false;
-    public bool gamePaused = false;
-    public bool levelComplete = false;
-    public bool gameOver = false;
+    [Header("Progress Bar Settings")]
+    [SerializeField] private float maxProgress = 100f;
+    [SerializeField] private float pointsPerKill = 5f;
+    [SerializeField] private float pointsLossPerSecond = 1f;
     
-    [Header("UI References")]
-    public GameObject gameUI;
-    public GameObject levelCompleteUI;
-    public GameObject gameOverUI;
-    public GameObject pauseUI;
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource bgmAudioSource;
+    [SerializeField] private AudioClip bgmClip;
+    [SerializeField] private bool playBGMOnStart = true;
+    [SerializeField] private bool loopBGM = true;
+    [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.5f;
     
-    [Header("Menu Integration")]
-    public MenuManager menuManager;
+    [Header("Pause Settings")]
+    [SerializeField] private bool hideCursorDuringGameplay = true;
     
-    [Header("Level Complete Menu")]
-    public GameObject levelCompleteMenuPrefab;
-    private GameObject levelCompleteMenuInstance;
+    private ProgressBar hypeMeter;
+    private Label killCountText;
+    private GroupBox pauseMenu;
+    private Button resumeButton;
+    private Button settingsButton;
+    private Button restartButton;
+    private Button quitButton;
     
-    [Header("Events")]
-    public UnityEvent OnGameStart;
-    public UnityEvent OnLevelComplete;
-    public UnityEvent OnGameOver;
-    public UnityEvent OnGamePause;
-    public UnityEvent OnGameResume;
-    
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip levelCompleteSound;
-    public AudioClip gameOverSound;
-    public AudioClip backgroundMusic;
-    
-    [Header("Input Actions")]
-    public InputAction pauseAction;
-    public InputAction restartAction;
-    
-    private KillCounter killCounter;
-    private EnemySpawner enemySpawner;
-    private PlayerShooting playerShooting;
-    private bool isInitialized = false;
+    private float currentProgress = 0f;
+    private float timeSinceLastDecay = 0f;
+    private int killCount = 0;
+    private bool isPaused = false;
     
     void Start()
     {
-        InitializeLevel();
-    }
-    
-    void InitializeLevel()
-    {
-        // Get references
-        killCounter = FindObjectOfType<KillCounter>();
-        enemySpawner = FindObjectOfType<EnemySpawner>();
-        playerShooting = FindObjectOfType<PlayerShooting>();
-        menuManager = FindObjectOfType<MenuManager>();
-        
-        // Set target kills
-        if (killCounter != null)
+        // Get UI Document if not assigned
+        if (uiDocument == null)
         {
-            killCounter.SetTargetKills(targetKills);
-            killCounter.OnLevelComplete.AddListener(OnLevelCompleteHandler);
+            uiDocument = GetComponent<UIDocument>();
         }
         
-        // Start game automatically when level loads
-        StartGame();
-        
-        // Setup input actions
-        SetupInputActions();
-        
-        isInitialized = true;
-        Debug.Log("Level initialized!");
-    }
-    
-    void StartGame()
-    {
-        gameStarted = true;
-        gamePaused = false;
-        levelComplete = false;
-        gameOver = false;
-        
-        // Hide cursor for gameplay
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        
-        // Show game UI
-        if (gameUI != null)
+        if (uiDocument == null)
         {
-            gameUI.SetActive(true);
+            Debug.LogError("LevelManager: UIDocument not found! Please assign it in the inspector or add it to this GameObject.");
+            return;
         }
         
-        // Hide other UIs
-        if (levelCompleteUI != null)
+        // Get UI elements from the UI Document
+        var root = uiDocument.rootVisualElement;
+        hypeMeter = root.Q<ProgressBar>();
+        killCountText = root.Q<Label>("KillCountText");
+        pauseMenu = root.Q<GroupBox>("PauseMenu");
+        
+        // Get pause menu buttons
+        if (pauseMenu != null)
         {
-            levelCompleteUI.SetActive(false);
-        }
-        
-        if (gameOverUI != null)
-        {
-            gameOverUI.SetActive(false);
-        }
-        
-        if (pauseUI != null)
-        {
-            pauseUI.SetActive(false);
-        }
-        
-        // Start enemy spawning
-        if (enemySpawner != null)
-        {
-            enemySpawner.StartSpawning();
-        }
-        
-        // Play background music
-        if (audioSource != null && backgroundMusic != null)
-        {
-            audioSource.clip = backgroundMusic;
-            audioSource.loop = true;
-            audioSource.Play();
-        }
-        
-        OnGameStart?.Invoke();
-        Debug.Log("Game started!");
-    }
-    
-    void OnLevelCompleteHandler()
-    {
-        if (levelComplete) return;
-        
-        levelComplete = true;
-        
-        // Stop enemy spawning
-        if (enemySpawner != null)
-        {
-            enemySpawner.StopSpawning();
-        }
-        
-        // Use MenuManager to show level complete
-        if (menuManager != null)
-        {
-            menuManager.ShowLevelComplete();
+            resumeButton = pauseMenu.Q<Button>("ResumeButton");
+            settingsButton = pauseMenu.Q<Button>("SettingsButton");
+            restartButton = pauseMenu.Q<Button>("RestartButton");
+            quitButton = pauseMenu.Q<Button>("QuitButton");
+            
+            // Register button callbacks
+            if (resumeButton != null)
+                resumeButton.clicked += ResumeGame;
+            
+            if (settingsButton != null)
+                settingsButton.clicked += OpenSettings;
+            
+            if (restartButton != null)
+                restartButton.clicked += RestartLevel;
+            
+            if (quitButton != null)
+                quitButton.clicked += QuitGame;
+            
+            // Hide pause menu initially
+            pauseMenu.style.display = DisplayStyle.None;
         }
         else
         {
-            // Fallback: spawn a simple level-complete menu with Restart/Main Menu/Quit
-            ShowLevelCompleteMenuFallback();
+            Debug.LogError("LevelManager: PauseMenu GroupBox not found in UI Document!");
         }
         
-        // Play level complete sound
-        if (audioSource != null && levelCompleteSound != null)
+        if (hypeMeter == null)
         {
-            audioSource.PlayOneShot(levelCompleteSound);
+            Debug.LogError("LevelManager: ProgressBar not found in UI Document!");
         }
-        
-        OnLevelComplete?.Invoke();
-        Debug.Log("Level complete!");
-        
-        // Auto load next level or wait for input
-        if (autoLoadNextLevel)
+        else
         {
-            Invoke(nameof(LoadNextLevel), levelCompleteDelay);
+            // Initialize progress bar
+            hypeMeter.lowValue = 0f;
+            hypeMeter.highValue = maxProgress;
+            hypeMeter.value = currentProgress;
         }
+        
+        if (killCountText == null)
+        {
+            Debug.LogError("LevelManager: KillCountText label not found in UI Document!");
+        }
+        
+        // Initialize BGM AudioSource
+        InitializeBGM();
+        
+        // Update initial UI
+        UpdateUI();
+        
+        // Play BGM if enabled
+        if (playBGMOnStart)
+        {
+            PlayBGM();
+        }
+        
+        // Set initial cursor state
+        SetCursorState(!hideCursorDuringGameplay);
     }
-
-    void ShowLevelCompleteMenuFallback()
+    
+    void Update()
     {
-        // Pause gameplay and show cursor
-        Time.timeScale = 0f;
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-        
-        // Hide in-game UI if referenced
-        if (gameUI != null) gameUI.SetActive(false);
-        
-        // If a prefab is provided, instantiate it; otherwise build a minimal UI
-        if (levelCompleteMenuPrefab != null)
+        // Check for pause input (ESC key)
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
+        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
         {
-            levelCompleteMenuInstance = Instantiate(levelCompleteMenuPrefab);
-            var menu = levelCompleteMenuInstance.GetComponent<LevelCompleteMenu>();
-            if (menu != null)
+            TogglePause();
+        }
+        
+        // Only update game logic when not paused
+        if (!isPaused)
+        {
+            // Decrease progress by 1 point every second
+            timeSinceLastDecay += Time.deltaTime;
+            
+            if (timeSinceLastDecay >= 1f)
             {
-                menu.Bind(this);
+                DecreaseProgress(pointsLossPerSecond);
+                timeSinceLastDecay = 0f;
             }
         }
-        else
-        {
-            // Create a minimal canvas with three buttons
-            var canvasGO = new GameObject("LevelCompleteMenu_Fallback");
-            levelCompleteMenuInstance = canvasGO;
-            var canvas = canvasGO.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
-            canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-            
-            // Panel background
-            var panel = new GameObject("Panel");
-            panel.transform.SetParent(canvasGO.transform, false);
-            var panelRT = panel.AddComponent<RectTransform>();
-            panelRT.anchorMin = new Vector2(0.5f, 0.5f);
-            panelRT.anchorMax = new Vector2(0.5f, 0.5f);
-            panelRT.sizeDelta = new Vector2(400, 260);
-            panelRT.anchoredPosition = Vector2.zero;
-            var panelImg = panel.AddComponent<UnityEngine.UI.Image>();
-            panelImg.color = new Color(0f, 0f, 0f, 0.8f);
-            
-            // Helper local function to create a button
-            UnityEngine.UI.Button CreateButton(string name, string label, Vector2 pos)
-            {
-                var btnGO = new GameObject(name);
-                btnGO.transform.SetParent(panel.transform, false);
-                var rt = btnGO.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(280, 60);
-                rt.anchoredPosition = pos;
-                var img = btnGO.AddComponent<UnityEngine.UI.Image>();
-                img.color = new Color(1f, 1f, 1f, 0.15f);
-                var btn = btnGO.AddComponent<UnityEngine.UI.Button>();
-                
-                var textGO = new GameObject("Text");
-                textGO.transform.SetParent(btnGO.transform, false);
-                var trt = textGO.AddComponent<RectTransform>();
-                trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
-                trt.offsetMin = Vector2.zero; trt.offsetMax = Vector2.zero;
-                var tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
-                tmp.text = label;
-                tmp.alignment = TMPro.TextAlignmentOptions.Center;
-                tmp.fontSize = 32f;
-                tmp.color = Color.white;
-                return btn;
-            }
-            
-            var restartBtn = CreateButton("RestartButton", "Restart", new Vector2(0, 70));
-            restartBtn.onClick.AddListener(() => { Time.timeScale = 1f; RestartLevel(); });
-            var mainMenuBtn = CreateButton("MainMenuButton", "Main Menu", new Vector2(0, 0));
-            mainMenuBtn.onClick.AddListener(() => { Time.timeScale = 1f; LoadMainMenu(); });
-            var quitBtn = CreateButton("QuitButton", "Quit", new Vector2(0, -70));
-            quitBtn.onClick.AddListener(() => {
-                Time.timeScale = 1f;
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit();
-#endif
-            });
-        }
     }
     
-    public void LoadNextLevel()
+    private void TogglePause()
     {
-        if (!string.IsNullOrEmpty(nextLevelName))
-        {
-            SceneManager.LoadScene(nextLevelName);
-        }
-        else
-        {
-            Debug.LogWarning("Next level name not set!");
-        }
-    }
-    
-    public void RestartLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-    
-    public void LoadMainMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
-    
-    public void PauseGame()
-    {
-        if (gamePaused || levelComplete || gameOver) return;
-        
-        gamePaused = true;
-        Time.timeScale = 0f;
-        
-        // Show cursor for pause menu
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-        
-        // Show pause UI
-        if (pauseUI != null)
-        {
-            pauseUI.SetActive(true);
-        }
-        else
-        {
-            Debug.LogWarning("No pause UI assigned to LevelManager! Please assign a pause UI in the inspector.");
-        }
-        
-        // Hide game UI
-        if (gameUI != null)
-        {
-            gameUI.SetActive(false);
-        }
-        
-        OnGamePause?.Invoke();
-        Debug.Log("Game paused!");
-    }
-    
-    public void ResumeGame()
-    {
-        if (!gamePaused) return;
-        
-        gamePaused = false;
-        Time.timeScale = 1f;
-        
-        // Hide cursor for gameplay
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        
-        // Hide pause UI
-        if (pauseUI != null)
-        {
-            pauseUI.SetActive(false);
-        }
-        
-        // Show game UI
-        if (gameUI != null)
-        {
-            gameUI.SetActive(true);
-        }
-        
-        OnGameResume?.Invoke();
-        Debug.Log("Game resumed!");
-    }
-    
-    // Helper method to wire up pause menu buttons
-    public void SetupPauseMenuButtons(UnityEngine.UI.Button resumeButton, UnityEngine.UI.Button restartButton, UnityEngine.UI.Button mainMenuButton)
-    {
-        if (resumeButton != null)
-        {
-            resumeButton.onClick.RemoveAllListeners();
-            resumeButton.onClick.AddListener(ResumeGame);
-        }
-        
-        if (restartButton != null)
-        {
-            restartButton.onClick.RemoveAllListeners();
-            restartButton.onClick.AddListener(RestartLevel);
-        }
-        
-        if (mainMenuButton != null)
-        {
-            mainMenuButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.AddListener(LoadMainMenu);
-        }        
-    }
-    
-    public void TogglePause()
-    {
-        if (gamePaused)
+        if (isPaused)
         {
             ResumeGame();
         }
@@ -369,115 +153,278 @@ public class LevelManager : MonoBehaviour
         }
     }
     
-    public void GameOver()
+    public void PauseGame()
     {
-        if (gameOver || levelComplete) return;
+        isPaused = true;
+        Time.timeScale = 0f;
         
-        gameOver = true;
-        
-        // Stop enemy spawning
-        if (enemySpawner != null)
+        // Show pause menu
+        if (pauseMenu != null)
         {
-            enemySpawner.StopSpawning();
+            pauseMenu.style.display = DisplayStyle.Flex;
         }
         
-        // Use MenuManager to show game over
-        if (menuManager != null)
+        // Pause BGM
+        PauseBGM();
+        
+        // Show cursor
+        SetCursorState(true);
+        
+        Debug.Log("LevelManager: Game paused.");
+    }
+    
+    public void ResumeGame()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        
+        // Hide pause menu
+        if (pauseMenu != null)
         {
-            menuManager.ShowGameOver();
+            pauseMenu.style.display = DisplayStyle.None;
+        }
+        
+        // Resume BGM
+        ResumeBGM();
+        
+        // Hide cursor if enabled
+        SetCursorState(!hideCursorDuringGameplay);
+        
+        Debug.Log("LevelManager: Game resumed.");
+    }
+    
+    private void OpenSettings()
+    {
+        Debug.Log("LevelManager: Opening settings... (Not implemented yet)");
+        // TODO: Implement settings menu
+    }
+    
+    private void RestartLevel()
+    {
+        // Reset time scale before reloading
+        Time.timeScale = 1f;
+        
+        // Reload current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+        Debug.Log("LevelManager: Restarting level...");
+    }
+    
+    private void QuitGame()
+    {
+        Debug.Log("LevelManager: Returning to main menu...");
+        
+        // Reset time scale before loading main menu
+        Time.timeScale = 1f;
+        
+        // Load main menu scene
+        SceneManager.LoadScene("MainMenu");
+    }
+    
+    private void SetCursorState(bool visible)
+    {
+        UnityEngine.Cursor.visible = visible;
+        UnityEngine.Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+    
+    private void InitializeBGM()
+    {
+        // Create AudioSource if not assigned
+        if (bgmAudioSource == null)
+        {
+            bgmAudioSource = gameObject.GetComponent<AudioSource>();
+            
+            if (bgmAudioSource == null)
+            {
+                bgmAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+        
+        // Configure AudioSource for BGM
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.playOnAwake = false;
+            bgmAudioSource.loop = loopBGM;
+            bgmAudioSource.volume = bgmVolume;
+            
+            if (bgmClip != null)
+            {
+                bgmAudioSource.clip = bgmClip;
+            }
+        }
+    }
+    
+    public void PlayBGM()
+    {
+        if (bgmAudioSource != null && bgmClip != null)
+        {
+            if (!bgmAudioSource.isPlaying)
+            {
+                bgmAudioSource.Play();
+                Debug.Log("LevelManager: BGM started playing.");
+            }
         }
         else
         {
-            // Fallback to old method
-            if (gameOverUI != null)
-            {
-                gameOverUI.SetActive(true);
-            }
+            Debug.LogWarning("LevelManager: Cannot play BGM - AudioSource or AudioClip is missing!");
+        }
+    }
+    
+    public void StopBGM()
+    {
+        if (bgmAudioSource != null && bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.Stop();
+            Debug.Log("LevelManager: BGM stopped.");
+        }
+    }
+    
+    public void PauseBGM()
+    {
+        if (bgmAudioSource != null && bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.Pause();
+            Debug.Log("LevelManager: BGM paused.");
+        }
+    }
+    
+    public void ResumeBGM()
+    {
+        if (bgmAudioSource != null && !bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.UnPause();
+            Debug.Log("LevelManager: BGM resumed.");
+        }
+    }
+    
+    public void SetBGMVolume(float volume)
+    {
+        bgmVolume = Mathf.Clamp01(volume);
+        
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.volume = bgmVolume;
+        }
+    }
+    
+    public void SetBGMClip(AudioClip clip)
+    {
+        bgmClip = clip;
+        
+        if (bgmAudioSource != null)
+        {
+            bool wasPlaying = bgmAudioSource.isPlaying;
+            bgmAudioSource.Stop();
+            bgmAudioSource.clip = bgmClip;
             
-            if (gameUI != null)
+            if (wasPlaying)
             {
-                gameUI.SetActive(false);
+                bgmAudioSource.Play();
             }
         }
+    }
+    
+    public void OnEnemyKilled()
+    {
+        // Increment kill counter
+        killCount++;
         
-        // Play game over sound
-        if (audioSource != null && gameOverSound != null)
+        // Increase progress by 5 points for each kill
+        IncreaseProgress(pointsPerKill);
+        
+        // Update kill count display
+        if (killCountText != null)
         {
-            audioSource.PlayOneShot(gameOverSound);
+            killCountText.text = killCount.ToString();
         }
         
-        OnGameOver?.Invoke();
-        Debug.Log("Game over!");
+        Debug.Log($"Enemy killed! Kill count: {killCount}. Progress increased by {pointsPerKill}. Current progress: {currentProgress}/{maxProgress}");
     }
     
-    void SetupInputActions()
+    private void IncreaseProgress(float amount)
     {
-        // Create pause action if not assigned
-        if (pauseAction == null)
+        currentProgress = Mathf.Clamp(currentProgress + amount, 0f, maxProgress);
+        UpdateProgressBar();
+    }
+    
+    private void DecreaseProgress(float amount)
+    {
+        currentProgress = Mathf.Clamp(currentProgress - amount, 0f, maxProgress);
+        UpdateProgressBar();
+    }
+    
+    private void UpdateProgressBar()
+    {
+        if (hypeMeter != null)
         {
-            pauseAction = new InputAction("Pause", InputActionType.Button, "<Keyboard>/escape");
+            hypeMeter.value = currentProgress;
         }
+    }
+    
+    private void UpdateUI()
+    {
+        UpdateProgressBar();
         
-        // Create restart action if not assigned
-        if (restartAction == null)
+        if (killCountText != null)
         {
-            restartAction = new InputAction("Restart", InputActionType.Button, "<Keyboard>/r");
+            killCountText.text = killCount.ToString();
         }
-        
-        // Enable the actions
-        pauseAction.Enable();
-        restartAction.Enable();
-        
-        // Add callbacks
-        pauseAction.performed += OnPausePerformed;
-        restartAction.performed += OnRestartPerformed;
-        
-        Debug.Log("LevelManager input actions setup complete");
     }
     
-    void OnPausePerformed(InputAction.CallbackContext context)
+    // Public methods for external control
+    public void SetProgress(float value)
     {
-        TogglePause();
+        currentProgress = Mathf.Clamp(value, 0f, maxProgress);
+        UpdateProgressBar();
     }
     
-    void OnRestartPerformed(InputAction.CallbackContext context)
+    public float GetProgress()
     {
-        RestartLevel();
+        return currentProgress;
     }
     
-    void Update()
+    public float GetProgressPercentage()
     {
-        // Input is now handled by Input System callbacks
-        // No need for manual input checking here
+        return currentProgress / maxProgress;
     }
     
-    // Public getters
-    public bool IsGameStarted() => gameStarted;
-    public bool IsGamePaused() => gamePaused;
-    public bool IsLevelComplete() => levelComplete;
-    public bool IsGameOver() => gameOver;
-    public int GetTargetKills() => targetKills;
-    public int GetCurrentKills() => killCounter != null ? killCounter.GetCurrentKills() : 0;
-    public float GetKillProgress() => killCounter != null ? killCounter.GetKillProgress() : 0f;
+    public void ResetProgress()
+    {
+        currentProgress = 0f;
+        UpdateProgressBar();
+    }
+    
+    public int GetKillCount()
+    {
+        return killCount;
+    }
+    
+    public bool IsBGMPlaying()
+    {
+        return bgmAudioSource != null && bgmAudioSource.isPlaying;
+    }
+    
+    public bool IsPaused()
+    {
+        return isPaused;
+    }
     
     void OnDestroy()
     {
-        // Clean up input actions
-        if (pauseAction != null)
-        {
-            pauseAction.performed -= OnPausePerformed;
-            pauseAction.Disable();
-            pauseAction.Dispose();
-        }
+        // Unregister button callbacks to prevent memory leaks
+        if (resumeButton != null)
+            resumeButton.clicked -= ResumeGame;
         
-        if (restartAction != null)
-        {
-            restartAction.performed -= OnRestartPerformed;
-            restartAction.Disable();
-            restartAction.Dispose();
-        }
+        if (settingsButton != null)
+            settingsButton.clicked -= OpenSettings;
         
-        // Reset time scale when object is destroyed
+        if (restartButton != null)
+            restartButton.clicked -= RestartLevel;
+        
+        if (quitButton != null)
+            quitButton.clicked -= QuitGame;
+        
+        // Reset time scale when destroyed
         Time.timeScale = 1f;
     }
 }
