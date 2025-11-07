@@ -98,11 +98,6 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();
         Debug.Log($"Move Input: {moveInput}");
-
-        if (animator)
-        {
-            animator.SetBool("isWalking", true);
-        }
     }
 
     public void AssignAnimator(Animator newAnimator)
@@ -347,6 +342,10 @@ public class PlayerController : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+        if (animator)
+        {
+            animator.SetBool("isWalking", moveDirection.magnitude > 0.1f);
+        }
 
         if (playerTransform != null && targetRotation.HasValue)
         {
