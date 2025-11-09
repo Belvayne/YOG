@@ -7,13 +7,13 @@ public class EnemySpawner : MonoBehaviour
     [Header("Spawn Settings")]
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private Transform[] spawnPoints;
-    [SerializeField] private float spawnInterval = 5f;
+    [SerializeField] private float spawnInterval = 10f;
     [SerializeField] private bool spawnOnStart = true;
 
     [Header("Group Spawn Settings")]
     [SerializeField] private int initialGroupSize = 1;
-    [SerializeField] private int maxGroupSize = 10;
-    [SerializeField] private float groupSizeIncreaseInterval = 30f;
+    [SerializeField] private int maxGroupSize = 6;
+    [SerializeField] private float groupSizeIncreaseInterval = 60f;
     [SerializeField] private int groupSizeIncrement = 1;
 
     private Coroutine spawnCoroutine;
