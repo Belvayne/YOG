@@ -52,8 +52,8 @@ public class EnemySpawner : MonoBehaviour
     {
         while (true)
         {
-            SpawnEnemyGroups();
             yield return new WaitForSeconds(spawnInterval);
+            SpawnEnemyGroups();
 
             elapsedTime += spawnInterval;
             if (elapsedTime >= groupSizeIncreaseInterval)
