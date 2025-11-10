@@ -13,6 +13,9 @@ public class MainMenuUI : MonoBehaviour
 
     private Button characterButton;
     private Button startButton;
+    private Button settingsButton;
+    private Button howtoplayButton;
+    private Button creditsButton;
     private Button quitButton;
     private UIDocument UIDocument;
 
@@ -53,28 +56,41 @@ public class MainMenuUI : MonoBehaviour
     public VisualTreeAsset mainMenuUXML;
     public VisualTreeAsset characterSelectUXML;
     public VisualTreeAsset sideScrollSelectUXML;
+    public VisualTreeAsset settingsUXML;
+    public VisualTreeAsset HowToPlayUXML;
+    public VisualTreeAsset creditsUXML;
 
     void Start()
     {
         // Access root of UIDocument
         UIDocument = GetComponent<UIDocument>();
-        var root = UIDocument.rootVisualElement;
-
-        // Get buttons by their names from your UXML
-        characterButton = root.Q<Button>("CharacterSelectButton");
-        startButton = root.Q<Button>("StartButton");
-        quitButton = root.Q<Button>("QuitButton");
-
-
-        // Add click event listeners
-        characterButton.clicked += OnCharacterClicked;
-        startButton.clicked += OnStartClicked;
-        quitButton.clicked += OnQuitClicked;
+        RebindMainMenuButtons();
 
         // Set selected character to Gura by default
         selectedCharacter = Instantiate(GuraPrefab, characterSpawnpoint);
         selectedPrefab = GuraPrefab;
         GameDataManager.Instance.selectedCharacterPrefab = selectedPrefab;
+    }
+
+    private void RebindMainMenuButtons()
+    {
+        var root = UIDocument.rootVisualElement;
+
+        // Get buttons by their names from your UXML
+        characterButton = root.Q<Button>("CharacterSelectButton");
+        startButton = root.Q<Button>("StartButton");
+        settingsButton = root.Q<Button>("SettingsButton");
+        howtoplayButton = root.Q<Button>("HowToPlayButton");
+        creditsButton = root.Q<Button>("CreditsButton");
+        quitButton = root.Q<Button>("QuitButton");
+
+        // Add click event listeners
+        characterButton.clicked += OnCharacterClicked;
+        startButton.clicked += OnStartClicked;
+        settingsButton.clicked += OnSettingsClicked;
+        howtoplayButton.clicked += OnHowToPlayClicked;
+        creditsButton.clicked += OnCreditsClicked;
+        quitButton.clicked += OnQuitClicked;
     }
 
     void PlayClick()
@@ -142,16 +158,8 @@ public class MainMenuUI : MonoBehaviour
     //                timelineDirector.Play();
     //            }
 
-    //            // Get buttons by their names from your UXML
-    //            characterButton = root.Q<Button>("CharacterSelectButton");
-    //            startButton = root.Q<Button>("StartButton");
-    //            quitButton = root.Q<Button>("QuitButton");
-
-
-    //            // Add click event listeners
-    //            characterButton.clicked += OnCharacterClicked;
-    //            startButton.clicked += OnStartClicked;
-    //            quitButton.clicked += OnQuitClicked;
+    //        RebindMainMenuButtons();
+    
     //        };
     //    }
     //}
@@ -211,16 +219,7 @@ public class MainMenuUI : MonoBehaviour
                     timelineDirector.Play();
                 }
 
-                // Get buttons by their names from your UXML
-                characterButton = root.Q<Button>("CharacterSelectButton");
-                startButton = root.Q<Button>("StartButton");
-                quitButton = root.Q<Button>("QuitButton");
-
-
-                // Add click event listeners
-                characterButton.clicked += OnCharacterClicked;
-                startButton.clicked += OnStartClicked;
-                quitButton.clicked += OnQuitClicked;
+                RebindMainMenuButtons();
             };
         }
     }
@@ -237,6 +236,78 @@ public class MainMenuUI : MonoBehaviour
         PlayClick();
         Debug.Log("Quit Game Clicked!");
         Application.Quit();
+    }
+
+    void OnSettingsClicked()
+    {
+        PlayClick();
+        Debug.Log("Settings Clicked!");
+        if (UIDocument != null && settingsUXML != null)
+        {
+            UIDocument.visualTreeAsset = settingsUXML;
+            
+            var newRoot = UIDocument.rootVisualElement;
+            
+            // Query for a back/close button in the settings UI
+            var backButton = newRoot.Q<Button>("BackButton");
+            if (backButton != null)
+            {
+                backButton.clicked += () =>
+                {
+                    PlayClick();
+                    UIDocument.visualTreeAsset = mainMenuUXML;
+                    RebindMainMenuButtons();
+                };
+            }
+        }
+    }
+
+    void OnHowToPlayClicked()
+    {
+        PlayClick();
+        Debug.Log("How To Play Clicked!");
+        if (UIDocument != null && HowToPlayUXML != null)
+        {
+            UIDocument.visualTreeAsset = HowToPlayUXML;
+            
+            var newRoot = UIDocument.rootVisualElement;
+            
+            // Query for a back/close button in the how to play UI
+            var backButton = newRoot.Q<Button>("BackButton");
+            if (backButton != null)
+            {
+                backButton.clicked += () =>
+                {
+                    PlayClick();
+                    UIDocument.visualTreeAsset = mainMenuUXML;
+                    RebindMainMenuButtons();
+                };
+            }
+        }
+    }
+
+    void OnCreditsClicked()
+    {
+        PlayClick();
+        Debug.Log("Credits Clicked!");
+        if (UIDocument != null && creditsUXML != null)
+        {
+            UIDocument.visualTreeAsset = creditsUXML;
+            
+            var newRoot = UIDocument.rootVisualElement;
+            
+            // Query for a back/close button in the credits UI
+            var backButton = newRoot.Q<Button>("BackButton");
+            if (backButton != null)
+            {
+                backButton.clicked += () =>
+                {
+                    PlayClick();
+                    UIDocument.visualTreeAsset = mainMenuUXML;
+                    RebindMainMenuButtons();
+                };
+            }
+        }
     }
 
     //void ScrollCharacter(GameObject currentPrefab, bool isNext)

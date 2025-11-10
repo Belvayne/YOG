@@ -2306,6 +2306,9 @@ MonoBehaviour:
   mainMenuUXML: {fileID: 9197481963319205126, guid: f9291d96f1463c848a22d8f8b810ae8f, type: 3}
   characterSelectUXML: {fileID: 9197481963319205126, guid: 6c3a61075659cb245ae2bdf236526a74, type: 3}
   sideScrollSelectUXML: {fileID: 9197481963319205126, guid: e322333f3ce1aac4aa24d036c9bb95ea, type: 3}
+  settingsUXML: {fileID: 9197481963319205126, guid: 515f4e52e3e70fa4e8305657d6ba6483, type: 3}
+  HowToPlayUXML: {fileID: 9197481963319205126, guid: c058c2d47b4997940ae604087c581b71, type: 3}
+  creditsUXML: {fileID: 9197481963319205126, guid: b9a919f4a99fa884fb935c02e3f5988f, type: 3}
 --- !u!1 &1292748438
 GameObject:
   m_ObjectHideFlags: 0
