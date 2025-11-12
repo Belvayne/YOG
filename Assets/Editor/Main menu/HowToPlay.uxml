@@ -1,0 +1,41 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:GroupBox style="top: 5%;">
+        <ui:Label text="HOW TO PLAY" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); font-size: 70px; color: rgb(109, 229, 255); -unity-text-outline-color: rgb(255, 255, 255); -unity-text-outline-width: 2px; -unity-text-align: upper-center; top: auto;" />
+        <ui:GroupBox name="instructionsBox" style="left: 20%; width: 60%; align-items: center; -unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); background-color: rgba(0, 0, 0, 0.63); border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px; border-left-color: rgb(109, 229, 255); border-right-color: rgb(109, 229, 255); border-top-color: rgb(109, 229, 255); border-bottom-color: rgb(109, 229, 255); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px;">
+            <ui:Label text="OBJECTIVE" style="font-size: 40px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); margin-bottom: 10px; -unity-text-align: upper-center;" />
+            <ui:Label text="Survive endless waves of enemies and rack up kills to fill the HYPE METER! The more you kill, the higher your score!" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); white-space: normal; margin-bottom: 30px; -unity-text-align: upper-center; height: 63px;" />
+            <ui:Label text="CONTROLS" style="font-size: 40px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); margin-bottom: 15px; -unity-text-align: upper-center; height: 32px;" />
+            <ui:GroupBox style="flex-direction: row; justify-content: center; align-self: center; flex-wrap: wrap;">
+                <ui:GroupBox name="MovementBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="MOVEMENT:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="W A S D" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="SprintBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="SPRINT:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="LEFT SHIFT" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="JumpBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="JUMP:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-color: rgb(255, 255, 255); -unity-text-outline-width: 2px; min-width: 150px;" />
+                    <ui:Label text="SPACE" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="ShootBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="SHOOT:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="LEFT MOUSE BUTTON" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="SwitchBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="SWITCH WEAPON:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="1, 2, 3" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="ZoomBox" style="flex-direction: row; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="CAMERA ZOOM:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="MOUSE SCROLL" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+                <ui:GroupBox name="PauseBox" style="flex-direction: row; margin-bottom: 20px; background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px;">
+                    <ui:Label text="PAUSE:" style="font-size: 32px; color: rgb(109, 229, 255); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); min-width: 150px;" />
+                    <ui:Label text="ESC" style="font-size: 32px; color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0);" />
+                </ui:GroupBox>
+            </ui:GroupBox>
+            <ui:Button text="BACK TO MENU" selectable="false" name="BackButton" focusable="false" enabled="true" style="-unity-font-definition: resource(&apos;Fonts &amp; Materials/LuckiestGuy-Regular&apos;); font-size: 30px; color: rgb(109, 229, 255); -unity-text-outline-color: rgb(255, 255, 255); -unity-text-outline-width: 2px; width: 281px; white-space: nowrap; -unity-text-align: lower-center; text-overflow: clip; left: auto; right: auto; position: relative; top: auto; bottom: auto; align-items: auto; justify-content: flex-start; align-self: center; align-content: auto; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px; border-left-color: rgb(109, 229, 255); border-right-color: rgb(109, 229, 255); border-top-color: rgb(109, 229, 255); border-bottom-color: rgb(109, 229, 255); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; background-color: rgba(255, 255, 255, 0.63); letter-spacing: 10px; word-spacing: 0; background-position-x: center; background-position-y: center; height: 64px; padding-left: 12px;" />
+        </ui:GroupBox>
+    </ui:GroupBox>
+</ui:UXML>
