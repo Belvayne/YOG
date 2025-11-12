@@ -2,11 +2,15 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
-
 public class LevelManager : MonoBehaviour
 {
-    [Header("UI Document")]
+    [Header("UI Documents")]
     [SerializeField] private UIDocument uiDocument;
+
+    [Header("UI Menu GameObjects")]
+    [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private GameObject deathMenuUI;
+    [SerializeField] private GameObject settingsMenuUI;
 
     [Header("Player Spawn Settings")]
     [SerializeField] private Transform playerSpawnPoint;
@@ -19,30 +23,21 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private float pointsPerKill = 5f;
     [SerializeField] private float pointsLossPerSecond = 1f;
     
-    [Header("Audio Settings")]
-    [SerializeField] private AudioSource bgmAudioSource;
-    [SerializeField] private AudioClip bgmClip;
-    [SerializeField] private bool playBGMOnStart = true;
-    [SerializeField] private bool loopBGM = true;
-    [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.5f;
-    
     [Header("Pause Settings")]
     [SerializeField] private bool hideCursorDuringGameplay = true;
-    
+
+    // UI Elements from main gameplay UI
     private ProgressBar hypeMeter;
     private Label killCountText;
-    private GroupBox pauseMenu;
-    private VisualElement deathMenu;
-    private Button resumeButton;
-    private Button settingsButton;
-    private Button restartButton;
-    private Button quitButton;
+    
+    // We don't store button references - we bind them dynamically when menus are shown
     
     private float currentProgress = 0f;
     private float timeSinceLastDecay = 0f;
     private int killCount = 0;
     private bool isPaused = false;
-    
+    private bool isInSettings = false;
+
     void Start()
     {
         Debug.Log("LevelManager: Loaded character = " + (GameDataManager.Instance.selectedCharacterPrefab != null ? GameDataManager.Instance.selectedCharacterPrefab.name : "None"));
@@ -50,74 +45,22 @@ public class LevelManager : MonoBehaviour
         // Spawn the selected character first
         SpawnSelectedCharacter();
 
-        // Get UI Document if not assigned
+        // Get main UI Document if not assigned
         if (uiDocument == null)
         {
             uiDocument = GetComponent<UIDocument>();
         }
-        
+
         if (uiDocument == null)
         {
             Debug.LogError("LevelManager: UIDocument not found! Please assign it in the inspector or add it to this GameObject.");
             return;
         }
-        
-        // Get UI elements from the UI Document
+
+        // Get UI elements from the main gameplay UI Document
         var root = uiDocument.rootVisualElement;
         hypeMeter = root.Q<ProgressBar>();
         killCountText = root.Q<Label>("KillCountText");
-        pauseMenu = root.Q<GroupBox>("PauseMenu");
-        deathMenu = root.Q<VisualElement>("DeathMenu");
-
-        // Get pause menu buttons
-        if (pauseMenu != null)
-        {
-            resumeButton = pauseMenu.Q<Button>("ResumeButton");
-            settingsButton = pauseMenu.Q<Button>("SettingsButton");
-            restartButton = pauseMenu.Q<Button>("RestartButton");
-            quitButton = pauseMenu.Q<Button>("QuitButton");
-            
-            // Register button callbacks
-            if (resumeButton != null)
-                resumeButton.clicked += ResumeGame;
-            
-            if (settingsButton != null)
-                settingsButton.clicked += OpenSettings;
-            
-            if (restartButton != null)
-                restartButton.clicked += RestartLevel;
-            
-            if (quitButton != null)
-                quitButton.clicked += QuitGame;
-            
-            // Hide pause menu initially
-            pauseMenu.style.display = DisplayStyle.None;
-        }
-        else
-        {
-            Debug.LogError("LevelManager: PauseMenu GroupBox not found in UI Document!");
-        }
-
-        if (deathMenu != null)
-        {
-            restartButton = deathMenu.Q<Button>("RestartButton");
-            quitButton = deathMenu.Q<Button>("QuitButton");
-
-            // Register button callbacks
-
-            if (restartButton != null)
-                restartButton.clicked += RestartLevel;
-
-            if (quitButton != null)
-                quitButton.clicked += QuitGame;
-
-            // Hide pause menu initially
-            deathMenu.style.display = DisplayStyle.None;
-        }
-        else
-        {
-            Debug.LogError("LevelManager: DeathMenu VisualElement not found in UI Document!");
-        }
 
         if (hypeMeter == null)
         {
@@ -130,26 +73,198 @@ public class LevelManager : MonoBehaviour
             hypeMeter.highValue = maxProgress;
             hypeMeter.value = currentProgress;
         }
-        
+
         if (killCountText == null)
         {
             Debug.LogError("LevelManager: KillCountText label not found in UI Document!");
         }
-        
-        // Initialize BGM AudioSource
-        InitializeBGM();
-        
+
+        // Verify menu GameObjects exist but DON'T query buttons yet
+        if (pauseMenuUI == null)
+        {
+            Debug.LogError("LevelManager: Pause Menu UI GameObject not assigned!");
+        }
+        else
+        {
+            // Make sure it has a UIDocument component
+            if (pauseMenuUI.GetComponent<UIDocument>() == null)
+            {
+                Debug.LogError("LevelManager: Pause Menu UI GameObject doesn't have a UIDocument component!");
+            }
+            // Hide pause menu initially
+            pauseMenuUI.SetActive(false);
+        }
+
+        if (deathMenuUI == null)
+        {
+            Debug.LogError("LevelManager: Death Menu UI GameObject not assigned!");
+        }
+        else
+        {
+            // Make sure it has a UIDocument component
+            if (deathMenuUI.GetComponent<UIDocument>() == null)
+            {
+                Debug.LogError("LevelManager: Death Menu UI GameObject doesn't have a UIDocument component!");
+            }
+            // Hide death menu initially
+            deathMenuUI.SetActive(false);
+        }
+
+        if (settingsMenuUI == null)
+        {
+            Debug.LogError("LevelManager: Settings Menu UI GameObject not assigned!");
+        }
+        else
+        {
+            // Make sure it has a UIDocument component
+            if (settingsMenuUI.GetComponent<UIDocument>() == null)
+            {
+                Debug.LogError("LevelManager: Settings Menu UI GameObject doesn't have a UIDocument component!");
+            }
+            // Hide settings menu initially
+            settingsMenuUI.SetActive(false);
+        }
+
         // Update initial UI
         UpdateUI();
-        
-        // Play BGM if enabled
-        if (playBGMOnStart)
-        {
-            PlayBGM();
-        }
-        
+
         // Set initial cursor state
         SetCursorState(!hideCursorDuringGameplay);
+    }
+
+    // Bind pause menu buttons when the menu is shown
+    private void BindPauseMenuButtons()
+    {
+        if (pauseMenuUI == null) return;
+
+        var pauseUIDoc = pauseMenuUI.GetComponent<UIDocument>();
+        if (pauseUIDoc == null)
+        {
+            Debug.LogError("LevelManager: Pause Menu UI has no UIDocument component!");
+            return;
+        }
+
+        var pauseRoot = pauseUIDoc.rootVisualElement;
+        
+        var resumeButton = pauseRoot.Q<Button>("ResumeButton");
+        var settingsButton = pauseRoot.Q<Button>("SettingsButton");
+        var restartButton = pauseRoot.Q<Button>("RestartButton");
+        var quitButton = pauseRoot.Q<Button>("QuitButton");
+
+        // Clear any existing callbacks and register new ones
+        if (resumeButton != null)
+        {
+            resumeButton.clicked -= ResumeGame;
+            resumeButton.clicked += ResumeGame;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: ResumeButton not found in Pause UI!");
+        }
+
+        if (settingsButton != null)
+        {
+            settingsButton.clicked -= OnSettingsClicked;
+            settingsButton.clicked += OnSettingsClicked;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: SettingsButton not found in Pause UI!");
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.clicked -= RestartLevel;
+            restartButton.clicked += RestartLevel;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: RestartButton not found in Pause UI!");
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.clicked -= QuitGame;
+            quitButton.clicked += QuitGame;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: QuitButton not found in Pause UI!");
+        }
+
+        Debug.Log("LevelManager: Pause menu buttons bound successfully.");
+    }
+
+    // Bind death menu buttons when the menu is shown
+    private void BindDeathMenuButtons()
+    {
+        if (deathMenuUI == null) return;
+
+        var deathUIDoc = deathMenuUI.GetComponent<UIDocument>();
+        if (deathUIDoc == null)
+        {
+            Debug.LogError("LevelManager: Death Menu UI has no UIDocument component!");
+            return;
+        }
+
+        var deathRoot = deathUIDoc.rootVisualElement;
+        
+        var restartButton = deathRoot.Q<Button>("RestartButton");
+        var quitButton = deathRoot.Q<Button>("QuitButton");
+
+        // Clear any existing callbacks and register new ones
+        if (restartButton != null)
+        {
+            restartButton.clicked -= RestartLevel;
+            restartButton.clicked += RestartLevel;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: RestartButton not found in Death UI!");
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.clicked -= QuitGame;
+            quitButton.clicked += QuitGame;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: QuitButton not found in Death UI!");
+        }
+
+        Debug.Log("LevelManager: Death menu buttons bound successfully.");
+    }
+
+    // Bind settings menu buttons when the menu is shown
+    private void BindSettingsMenuButtons()
+    {
+        if (settingsMenuUI == null) return;
+
+        var settingsUIDoc = settingsMenuUI.GetComponent<UIDocument>();
+        if (settingsUIDoc == null)
+        {
+            Debug.LogError("LevelManager: Settings Menu UI has no UIDocument component!");
+            return;
+        }
+
+        var settingsRoot = settingsUIDoc.rootVisualElement;
+        
+        var backButton = settingsRoot.Q<Button>("BackButton");
+
+        // Clear any existing callbacks and register new ones
+        if (backButton != null)
+        {
+            backButton.clicked -= OnSettingsBackClicked;
+            backButton.clicked += OnSettingsBackClicked;
+            Debug.Log("LevelManager: BackButton bound to OnSettingsBackClicked");
+        }
+        else
+        {
+            Debug.LogError("LevelManager: BackButton not found in Settings UI!");
+        }
+
+        Debug.Log("LevelManager: Settings menu buttons bound successfully.");
     }
 
     private void SpawnSelectedCharacter()
@@ -218,7 +333,15 @@ public class LevelManager : MonoBehaviour
         var keyboard = UnityEngine.InputSystem.Keyboard.current;
         if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
         {
-            TogglePause();
+            // If settings menu is open, close it and return to pause menu
+            if (isInSettings)
+            {
+                OnSettingsBackClicked();
+            }
+            else
+            {
+                TogglePause();
+            }
         }
         
         // Only update game logic when not paused
@@ -251,14 +374,24 @@ public class LevelManager : MonoBehaviour
     {
         Time.timeScale = 0f;
 
-        // Show pause menu
-        if (deathMenu != null)
+        // Hide main gameplay UI
+        if (uiDocument != null && uiDocument.rootVisualElement != null)
         {
-            deathMenu.style.display = DisplayStyle.Flex;
+            uiDocument.rootVisualElement.style.display = DisplayStyle.None;
         }
 
-        // Pause BGM
-        PauseBGM();
+        // Show death menu
+        if (deathMenuUI != null)
+        {
+            deathMenuUI.SetActive(true);
+            // IMPORTANT: Bind buttons AFTER activating the GameObject
+            BindDeathMenuButtons();
+            Debug.Log("LevelManager: Death menu shown.");
+        }
+        else
+        {
+            Debug.LogError("LevelManager: Cannot show death menu - GameObject is null!");
+        }
 
         // Show cursor
         SetCursorState(true);
@@ -271,14 +404,24 @@ public class LevelManager : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
         
-        // Show pause menu
-        if (pauseMenu != null)
+        // Hide main gameplay UI
+        if (uiDocument != null && uiDocument.rootVisualElement != null)
         {
-            pauseMenu.style.display = DisplayStyle.Flex;
+            uiDocument.rootVisualElement.style.display = DisplayStyle.None;
         }
         
-        // Pause BGM
-        PauseBGM();
+        // Show pause menu
+        if (pauseMenuUI != null)
+        {
+            pauseMenuUI.SetActive(true);
+            // IMPORTANT: Bind buttons AFTER activating the GameObject
+            BindPauseMenuButtons();
+            Debug.Log("LevelManager: Pause menu shown.");
+        }
+        else
+        {
+            Debug.LogError("LevelManager: Cannot show pause menu - GameObject is null!");
+        }
         
         // Show cursor
         SetCursorState(true);
@@ -292,40 +435,87 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 1f;
         
         // Hide pause menu
-        if (pauseMenu != null)
+        if (pauseMenuUI != null)
         {
-            pauseMenu.style.display = DisplayStyle.None;
+            pauseMenuUI.SetActive(false);
+            Debug.Log("LevelManager: Pause menu hidden.");
         }
         
-        // Resume BGM
-        ResumeBGM();
+        // Show main gameplay UI
+        if (uiDocument != null && uiDocument.rootVisualElement != null)
+        {
+            uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        }
         
         // Hide cursor if enabled
         SetCursorState(!hideCursorDuringGameplay);
         
         Debug.Log("LevelManager: Game resumed.");
     }
-    
-    private void OpenSettings()
+
+    void OnSettingsClicked()
     {
-        Debug.Log("LevelManager: Opening settings... (Not implemented yet)");
-        // TODO: Implement settings menu
+        Debug.Log("LevelManager: Settings Clicked!");
+
+        isInSettings = true;
+
+        // Hide pause menu
+        if (pauseMenuUI != null)
+        {
+            pauseMenuUI.SetActive(false);
+        }
+
+        // Show settings menu
+        if (settingsMenuUI != null)
+        {
+            settingsMenuUI.SetActive(true);
+            // IMPORTANT: Bind settings menu buttons AFTER activating
+            BindSettingsMenuButtons();
+            Debug.Log("LevelManager: Settings menu shown.");
+        }
+        else
+        {
+            Debug.LogError("LevelManager: Cannot show settings menu - GameObject is null!");
+        }
     }
-    
+
+    public void OnSettingsBackClicked()
+    {
+        Debug.Log("LevelManager: Back from Settings!");
+
+        isInSettings = false;
+
+        // Hide settings menu
+        if (settingsMenuUI != null)
+        {
+            settingsMenuUI.SetActive(false);
+            Debug.Log("LevelManager: Settings menu hidden.");
+        }
+
+        // Show pause menu again
+        if (pauseMenuUI != null)
+        {
+            pauseMenuUI.SetActive(true);
+            // Re-bind buttons when returning to pause menu
+            BindPauseMenuButtons();
+            Debug.Log("LevelManager: Pause menu shown.");
+        }
+    }
+
     private void RestartLevel()
     {
+        Debug.Log("LevelManager: RestartLevel called!");
+        
         // Reset time scale before reloading
         Time.timeScale = 1f;
         
         // Reload current scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        
-        Debug.Log("LevelManager: Restarting level...");
     }
     
     private void QuitGame()
     {
-        Debug.Log("LevelManager: Returning to main menu...");
+        Debug.Log("LevelManager: QuitGame called - Returning to main menu...");
         
         // Reset time scale before loading main menu
         Time.timeScale = 1f;
@@ -339,104 +529,7 @@ public class LevelManager : MonoBehaviour
         UnityEngine.Cursor.visible = visible;
         UnityEngine.Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
-    
-    private void InitializeBGM()
-    {
-        // Create AudioSource if not assigned
-        if (bgmAudioSource == null)
-        {
-            bgmAudioSource = gameObject.GetComponent<AudioSource>();
-            
-            if (bgmAudioSource == null)
-            {
-                bgmAudioSource = gameObject.AddComponent<AudioSource>();
-            }
-        }
-        
-        // Configure AudioSource for BGM
-        if (bgmAudioSource != null)
-        {
-            bgmAudioSource.playOnAwake = false;
-            bgmAudioSource.loop = loopBGM;
-            bgmAudioSource.volume = bgmVolume;
-            
-            if (bgmClip != null)
-            {
-                bgmAudioSource.clip = bgmClip;
-            }
-        }
-    }
-    
-    public void PlayBGM()
-    {
-        if (bgmAudioSource != null && bgmClip != null)
-        {
-            if (!bgmAudioSource.isPlaying)
-            {
-                bgmAudioSource.Play();
-                Debug.Log("LevelManager: BGM started playing.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("LevelManager: Cannot play BGM - AudioSource or AudioClip is missing!");
-        }
-    }
-    
-    public void StopBGM()
-    {
-        if (bgmAudioSource != null && bgmAudioSource.isPlaying)
-        {
-            bgmAudioSource.Stop();
-            Debug.Log("LevelManager: BGM stopped.");
-        }
-    }
-    
-    public void PauseBGM()
-    {
-        if (bgmAudioSource != null && bgmAudioSource.isPlaying)
-        {
-            bgmAudioSource.Pause();
-            Debug.Log("LevelManager: BGM paused.");
-        }
-    }
-    
-    public void ResumeBGM()
-    {
-        if (bgmAudioSource != null && !bgmAudioSource.isPlaying)
-        {
-            bgmAudioSource.UnPause();
-            Debug.Log("LevelManager: BGM resumed.");
-        }
-    }
-    
-    public void SetBGMVolume(float volume)
-    {
-        bgmVolume = Mathf.Clamp01(volume);
-        
-        if (bgmAudioSource != null)
-        {
-            bgmAudioSource.volume = bgmVolume;
-        }
-    }
-    
-    public void SetBGMClip(AudioClip clip)
-    {
-        bgmClip = clip;
-        
-        if (bgmAudioSource != null)
-        {
-            bool wasPlaying = bgmAudioSource.isPlaying;
-            bgmAudioSource.Stop();
-            bgmAudioSource.clip = bgmClip;
-            
-            if (wasPlaying)
-            {
-                bgmAudioSource.Play();
-            }
-        }
-    }
-    
+     
     public void OnEnemyKilled()
     {
         // Increment kill counter
@@ -512,11 +605,6 @@ public class LevelManager : MonoBehaviour
         return killCount;
     }
     
-    public bool IsBGMPlaying()
-    {
-        return bgmAudioSource != null && bgmAudioSource.isPlaying;
-    }
-    
     public bool IsPaused()
     {
         return isPaused;
@@ -525,17 +613,49 @@ public class LevelManager : MonoBehaviour
     void OnDestroy()
     {
         // Unregister button callbacks to prevent memory leaks
-        if (resumeButton != null)
-            resumeButton.clicked -= ResumeGame;
+        if (pauseMenuUI != null)
+        {
+            var pauseUIDoc = pauseMenuUI.GetComponent<UIDocument>();
+            if (pauseUIDoc != null)
+            {
+                var pauseRoot = pauseUIDoc.rootVisualElement;
+                
+                var resumeButton = pauseRoot.Q<Button>("ResumeButton");
+                var settingsButton = pauseRoot.Q<Button>("SettingsButton");
+                var restartButton = pauseRoot.Q<Button>("RestartButton");
+                var quitButton = pauseRoot.Q<Button>("QuitButton");
+
+                if (resumeButton != null)
+                    resumeButton.clicked -= ResumeGame;
+                
+                if (settingsButton != null)
+                    settingsButton.clicked -= OnSettingsClicked;
+                
+                if (restartButton != null)
+                    restartButton.clicked -= RestartLevel;
+                
+                if (quitButton != null)
+                    quitButton.clicked -= QuitGame;
+            }
+        }
         
-        if (settingsButton != null)
-            settingsButton.clicked -= OpenSettings;
-        
-        if (restartButton != null)
-            restartButton.clicked -= RestartLevel;
-        
-        if (quitButton != null)
-            quitButton.clicked -= QuitGame;
+        if (deathMenuUI != null)
+        {
+            var deathUIDoc = deathMenuUI.GetComponent<UIDocument>();
+            if (deathUIDoc != null)
+            {
+                var deathRoot = deathUIDoc.rootVisualElement;
+                
+                var restartButton = deathRoot.Q<Button>("RestartButton");
+                var quitButton = deathRoot.Q<Button>("QuitButton");
+
+                if (restartButton != null)
+                    restartButton.clicked -= RestartLevel;
+                
+                if (quitButton != null)
+                    quitButton.clicked -= QuitGame;
+            }
+        }
         
         // Reset time scale when destroyed
         Time.timeScale = 1f;

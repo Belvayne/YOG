@@ -155,6 +155,61 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1656309822236131495, guid: a10243dcd0af32b46b6ed3ba87545f4b, type: 3}
   m_PrefabInstance: {fileID: 741941651}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &376613384
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 376613386}
+  - component: {fileID: 376613385}
+  m_Layer: 0
+  m_Name: SettingsUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &376613385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376613384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: e92bf0120d97d414da53ad62f177cab6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 515f4e52e3e70fa4e8305657d6ba6483, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &376613386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376613384}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.44116, y: 0.10915, z: 4.56791}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &741941651
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -329,6 +384,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6450943815275551443, guid: ae1550080f422944d954dd47d2ab516a, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 07a7744067dc5c548a012547b8df2463, type: 3}
+    - target: {fileID: 6450943815275551443, guid: ae1550080f422944d954dd47d2ab516a, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: -5824144340962431221, guid: e0eb3581b0510264cadb2a38f385ba33, type: 2}
     - target: {fileID: 7037142868355129717, guid: ae1550080f422944d954dd47d2ab516a, type: 3}
       propertyPath: gameUI
       value: 
@@ -403,11 +466,61 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1656309822236131495, guid: a10243dcd0af32b46b6ed3ba87545f4b, type: 3}
   m_PrefabInstance: {fileID: 2135624263}
   m_PrefabAsset: {fileID: 0}
---- !u!82 &1416562071 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 6450943815275551443, guid: ae1550080f422944d954dd47d2ab516a, type: 3}
-  m_PrefabInstance: {fileID: 857210780}
+--- !u!1 &1419137266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1419137268}
+  - component: {fileID: 1419137267}
+  m_Layer: 0
+  m_Name: DeathUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1419137267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1419137266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: e92bf0120d97d414da53ad62f177cab6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 09b1330d46805cd4baeb16d9427160a0, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &1419137268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1419137266}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.44116, y: 0.10915, z: 4.56791}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1455908310 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1656309822236131495, guid: a10243dcd0af32b46b6ed3ba87545f4b, type: 3}
@@ -663,6 +776,61 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f03cfa1269eccee449a8cfaa845068f5, type: 3}
+--- !u!1 &1670871922
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1670871924}
+  - component: {fileID: 1670871923}
+  m_Layer: 0
+  m_Name: PauseUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1670871923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670871922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: e92bf0120d97d414da53ad62f177cab6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: e91197c47df68f04da6e48c7444313dd, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &1670871924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670871922}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.44116, y: 0.10915, z: 4.56791}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1758305026
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -710,6 +878,14 @@ PrefabInstance:
     - target: {fileID: 3371343748012130997, guid: aac7afa67ee951c42b603d7a35a25ef2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3399606326993064427, guid: aac7afa67ee951c42b603d7a35a25ef2, type: 3}
+      propertyPath: spawnInterval
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3399606326993064427, guid: aac7afa67ee951c42b603d7a35a25ef2, type: 3}
+      propertyPath: maxActiveEnemies
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3399606326993064427, guid: aac7afa67ee951c42b603d7a35a25ef2, type: 3}
       propertyPath: spawnPoints.Array.size
@@ -770,16 +946,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
   uiDocument: {fileID: 1986715425}
+  pauseMenuUI: {fileID: 1670871922}
+  deathMenuUI: {fileID: 1419137266}
+  settingsMenuUI: {fileID: 376613384}
   playerSpawnPoint: {fileID: 77788353}
   PlayerPrefab: {fileID: 8948067106828702862, guid: 11049e48331c8604da703584b66f44c8, type: 3}
   maxProgress: 100
   pointsPerKill: 5
   pointsLossPerSecond: 1
-  bgmAudioSource: {fileID: 1416562071}
-  bgmClip: {fileID: 8300000, guid: 07a7744067dc5c548a012547b8df2463, type: 3}
-  playBGMOnStart: 1
-  loopBGM: 1
-  bgmVolume: 0.5
   hideCursorDuringGameplay: 1
 --- !u!1 &1986715423
 GameObject:
@@ -970,6 +1144,9 @@ SceneRoots:
   - {fileID: 1604509086}
   - {fileID: 1052308088}
   - {fileID: 1986715424}
+  - {fileID: 1419137268}
+  - {fileID: 1670871924}
+  - {fileID: 376613386}
   - {fileID: 77788353}
   - {fileID: 857210780}
   - {fileID: 1666473158}

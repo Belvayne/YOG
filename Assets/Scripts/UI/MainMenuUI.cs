@@ -364,7 +364,6 @@ public class MainMenuUI : MonoBehaviour
     //    }
     //}
 
-
     void OnCharacterSelected(GameObject prefab)
     {
         Debug.Log($"Character selected: {prefab}");

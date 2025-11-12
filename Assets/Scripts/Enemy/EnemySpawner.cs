@@ -9,6 +9,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private float spawnInterval = 10f;
     [SerializeField] private bool spawnOnStart = true;
+    [SerializeField] private int maxActiveEnemies = 10;
 
     [Header("Group Spawn Settings")]
     [SerializeField] private int initialGroupSize = 1;
@@ -19,6 +20,7 @@ public class EnemySpawner : MonoBehaviour
     private Coroutine spawnCoroutine;
     private int currentGroupSize;
     private float elapsedTime;
+    private List<GameObject> activeEnemies = new List<GameObject>();
 
     void Start()
     {
@@ -29,6 +31,12 @@ public class EnemySpawner : MonoBehaviour
         {
             StartSpawning();
         }
+    }
+
+    void Update()
+    {
+        // Clean up null references from destroyed enemies
+        activeEnemies.RemoveAll(enemy => enemy == null);
     }
 
     public void StartSpawning()
@@ -74,6 +82,13 @@ public class EnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < currentGroupSize; i++)
             {
+                // Check if we've reached the maximum enemy limit
+                if (activeEnemies.Count >= maxActiveEnemies)
+                {
+                    Debug.LogWarning($"EnemySpawner: Maximum enemy limit ({maxActiveEnemies}) reached. Skipping spawn.");
+                    return;
+                }
+
                 int prefabIndex = Random.Range(0, enemyPrefabs.Length);
                 
                 // Add slight random offset to prevent enemies from spawning exactly on top of each other
@@ -83,8 +98,27 @@ public class EnemySpawner : MonoBehaviour
                     Random.Range(-0.5f, 0.5f)
                 );
 
-                Instantiate(enemyPrefabs[prefabIndex], spawnPosition, spawnPoint.rotation);
+                GameObject spawnedEnemy = Instantiate(enemyPrefabs[prefabIndex], spawnPosition, spawnPoint.rotation);
+                activeEnemies.Add(spawnedEnemy);
             }
         }
+    }
+
+    // Public method to get the current number of active enemies
+    public int GetActiveEnemyCount()
+    {
+        return activeEnemies.Count;
+    }
+
+    // Public method to manually remove an enemy from tracking (if needed)
+    public void RemoveEnemy(GameObject enemy)
+    {
+        activeEnemies.Remove(enemy);
+    }
+
+    void OnDestroy()
+    {
+        // Clean up the list when the spawner is destroyed
+        activeEnemies.Clear();
     }
 }

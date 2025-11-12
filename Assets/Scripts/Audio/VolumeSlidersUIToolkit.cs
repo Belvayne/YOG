@@ -85,6 +85,17 @@ public class VolumeSlidersUIToolkit : MonoBehaviour
         });
 
         _back?.RegisterCallback<ClickEvent>(_ => GoBackToMenu());
+
+        // Add debug logging to sliders
+        _master?.RegisterCallback<PointerDownEvent>(evt => {
+            Debug.Log("MASTER SLIDER CLICKED - Input is working!");
+        });
+        
+        _music?.RegisterCallback<PointerDownEvent>(evt => {
+            Debug.Log("MUSIC SLIDER CLICKED - Input is working!");
+        });
+        
+        Debug.Log($"VolumeSlidersUIToolkit OnEnable - Time.timeScale = {Time.timeScale}");
     }
 
     void GoBackToMenu()
