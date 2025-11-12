@@ -32,6 +32,7 @@ public class LevelManager : MonoBehaviour
     private ProgressBar hypeMeter;
     private Label killCountText;
     private GroupBox pauseMenu;
+    private VisualElement deathMenu;
     private Button resumeButton;
     private Button settingsButton;
     private Button restartButton;
@@ -66,7 +67,8 @@ public class LevelManager : MonoBehaviour
         hypeMeter = root.Q<ProgressBar>();
         killCountText = root.Q<Label>("KillCountText");
         pauseMenu = root.Q<GroupBox>("PauseMenu");
-        
+        deathMenu = root.Q<VisualElement>("DeathMenu");
+
         // Get pause menu buttons
         if (pauseMenu != null)
         {
@@ -95,7 +97,28 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogError("LevelManager: PauseMenu GroupBox not found in UI Document!");
         }
-        
+
+        if (deathMenu != null)
+        {
+            restartButton = deathMenu.Q<Button>("RestartButton");
+            quitButton = deathMenu.Q<Button>("QuitButton");
+
+            // Register button callbacks
+
+            if (restartButton != null)
+                restartButton.clicked += RestartLevel;
+
+            if (quitButton != null)
+                quitButton.clicked += QuitGame;
+
+            // Hide pause menu initially
+            deathMenu.style.display = DisplayStyle.None;
+        }
+        else
+        {
+            Debug.LogError("LevelManager: DeathMenu VisualElement not found in UI Document!");
+        }
+
         if (hypeMeter == null)
         {
             Debug.LogError("LevelManager: ProgressBar not found in UI Document!");
@@ -222,6 +245,25 @@ public class LevelManager : MonoBehaviour
         {
             PauseGame();
         }
+    }
+
+    public void DeathMenu()
+    {
+        Time.timeScale = 0f;
+
+        // Show pause menu
+        if (deathMenu != null)
+        {
+            deathMenu.style.display = DisplayStyle.Flex;
+        }
+
+        // Pause BGM
+        PauseBGM();
+
+        // Show cursor
+        SetCursorState(true);
+
+        Debug.Log("LevelManager: Player Died.");
     }
     
     public void PauseGame()

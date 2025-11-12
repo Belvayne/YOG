@@ -348,15 +348,12 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
-            var ragdoll = GetComponent<RagdollActivator>();
-            if (ragdoll != null)
-                ragdoll.ActivateRagdoll(hitPoint, hitForce);
         }
     }
 
     private void Die()
     {
-        levelManager.TogglePause();
+        levelManager.DeathMenu();
         // Implement death behavior (e.g., respawn, game over screen)
     }
 

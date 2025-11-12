@@ -14,12 +14,13 @@ public class SSRBLogic : EnemyController
         base.Die(); // Handles isDead, agent cleanup, kill counter, etc.
 
         // Start self-destruct sequence (e.g., coroutine to explode after 3 seconds)
+        StartCoroutine(ExplosionCoroutine());
         StartCoroutine(SelfDestructCoroutine());
     }
 
-    private IEnumerator SelfDestructCoroutine()
+    private IEnumerator ExplosionCoroutine()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2.8f);
         Vector3 explosionPos = GetRagdollCenter();
 
         // Instantiate explosion effect
@@ -30,6 +31,12 @@ public class SSRBLogic : EnemyController
                 Instantiate(explosionEffect, explosionPos, Quaternion.identity);
             }
         }
+    }
+
+    private IEnumerator SelfDestructCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        Vector3 explosionPos = GetRagdollCenter();
 
         // Explosion parameters
         float explosionRadius = 2.5f;
@@ -46,6 +53,13 @@ public class SSRBLogic : EnemyController
             {
                 Vector3 forceDir = (hit.transform.position - explosionPos).normalized * explosionForce;
                 damageable.TakeDamage(explosionPos, forceDir, explosionDamage);
+            }
+
+            PlayerController playerController = hit.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                Vector3 forceDir = (hit.transform.position - explosionPos).normalized * explosionForce;
+                playerController.TakeDamage(explosionPos, forceDir, explosionDamage);
             }
 
             // Apply force to rigidbodies
