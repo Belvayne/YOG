@@ -28,6 +28,14 @@ public class AudioSettingsManager : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        
+        // Verify mixer is assigned
+        if (mixer == null)
+        {
+            Debug.LogError("AudioSettingsManager: AudioMixer is not assigned! Please assign it in the Inspector.");
+            return;
+        }
+        
         LoadAndApply();
     }
 
@@ -43,12 +51,32 @@ public class AudioSettingsManager : MonoBehaviour
 
     void SetVolume(string mixerParam, string prefKey, float linear)
     {
+        if (mixer == null)
+        {
+            Debug.LogError($"AudioSettingsManager: Cannot set {mixerParam} - AudioMixer is null!");
+            return;
+        }
+        
+        // Save to PlayerPrefs
         PlayerPrefs.SetFloat(prefKey, linear);
-        //mixer.SetFloat(mixerParam, VolumeUtils.LinearToDecibels(linear));
+        
+        // Convert to decibels and apply to mixer
+        float db = VolumeUtils.LinearToDecibels(linear);
+        bool success = mixer.SetFloat(mixerParam, db);
+        
+        if (!success)
+        {
+            Debug.LogError($"AudioSettingsManager: Failed to set mixer parameter '{mixerParam}'. Make sure it's exposed in the AudioMixer!");
+        }
+        else
+        {
+            Debug.Log($"AudioSettingsManager: Set {mixerParam} to {linear:F2} ({db:F2} dB)");
+        }
     }
 
     void LoadAndApply()
     {
+        Debug.Log("AudioSettingsManager: Loading and applying audio settings...");
         SetMaster(GetMaster());
         SetMusic(GetMusic());
         SetSfx(GetSfx());

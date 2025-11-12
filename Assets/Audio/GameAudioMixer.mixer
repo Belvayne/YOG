@@ -6,7 +6,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UI\
+  m_Name: UI
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 922299515406f2c42b46c8aaf6540de5
   m_Children: []
@@ -100,7 +100,15 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: 3f45daeda85566a47ad0bb50e795fd71
+    name: MasterVol
+  - guid: 4d9237ccfc17bc741abb1b4cc6b1a98d
+    name: MusicVol
+  - guid: 784ce92fb0ce9d948a81527be25f1036
+    name: SFXVol
+  - guid: 1b9d8c7b50c61c948a76d298028b8bf9
+    name: UIVol
   m_AudioMixerGroupViews:
   - guids:
     - 47b43150551fe1143985b43eadae9196

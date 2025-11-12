@@ -2,14 +2,14 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.Splines; // only if you plan to load a scene
+using UnityEngine.Splines;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
 
 public class MainMenuUI : MonoBehaviour
 {
-    public AudioSource clickSource;   // assign in Inspector
-    public AudioClip clickClip;       // assign in Inspector
+    public AudioSource clickSource;
+    public AudioClip clickClip;
 
     private Button characterButton;
     private Button startButton;
@@ -39,6 +39,9 @@ public class MainMenuUI : MonoBehaviour
     private Button KiaraButton;
     private Button CallieButton;
     private Button confirmButton;
+
+    [Header("Settings Menu")]
+    [SerializeField] private GameObject settingsMenuUI;
 
     private Button nextButton;
     private Button previousButton;
@@ -242,24 +245,34 @@ public class MainMenuUI : MonoBehaviour
     {
         PlayClick();
         Debug.Log("Settings Clicked!");
-        if (UIDocument != null && settingsUXML != null)
+
+        // Hide main menu
+        UIDocument.rootVisualElement.style.display = DisplayStyle.None;
+
+        // Show settings menu
+        if (settingsMenuUI != null)
         {
-            UIDocument.visualTreeAsset = settingsUXML;
-            
-            var newRoot = UIDocument.rootVisualElement;
-            
-            // Query for a back/close button in the settings UI
-            var backButton = newRoot.Q<Button>("BackButton");
-            if (backButton != null)
-            {
-                backButton.clicked += () =>
-                {
-                    PlayClick();
-                    UIDocument.visualTreeAsset = mainMenuUXML;
-                    RebindMainMenuButtons();
-                };
-            }
+            settingsMenuUI.SetActive(true);
         }
+        else
+        {
+            Debug.LogError("Settings Menu UI GameObject not assigned!");
+        }
+    }
+
+    public void OnSettingsBackClicked()
+    {
+        PlayClick();
+        Debug.Log("Back from Settings!");
+
+        // Hide settings menu
+        if (settingsMenuUI != null)
+        {
+            settingsMenuUI.SetActive(false);
+        }
+
+        // Show main menu
+        UIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
     }
 
     void OnHowToPlayClicked()
