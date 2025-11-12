@@ -12,6 +12,8 @@ public class EnemyController : MonoBehaviour, IDamageable
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float rotationSpeed = 5f;
 
+    [SerializeField] private float hitForceMagnitude = 5f;
+
     private bool isDead = false;
     private float lastAttackTime = -Mathf.Infinity;
     private NavMeshAgent agent;
@@ -24,8 +26,51 @@ public class EnemyController : MonoBehaviour, IDamageable
 
     void Update()
     {
-        if (isDead || playerTransform == null) return;
-        agent.destination = playerTransform.position;
+        // Fix: Check if playerController is not null and use PlayerController's IsDead() method
+        if (isDead || playerTransform == null)
+            return;
+
+        var playerController = playerTransform.GetComponent<PlayerController>();
+        if (playerController != null && playerController.IsDead())
+            return;
+
+        // NavMeshAgent handles movement
+        if (agent != null)
+            agent.destination = playerTransform.position;
+
+        // Attack-only logic: deal damage when within range and cooldown passed
+        float sqrDistance = (playerTransform.position - transform.position).sqrMagnitude;
+        float attackRangeSqr = attackRange * attackRange;
+        if (sqrDistance <= attackRangeSqr && Time.time >= lastAttackTime + attackCooldown)
+        {
+            if (playerController != null && playerController.GetCurrentHealth() > 0)
+            {
+                // Determine closest point on the player's collider (fallback to player position)
+                Vector3 hitPoint = playerTransform.position;
+                Collider playerCollider = playerTransform.GetComponent<Collider>();
+                if (playerCollider != null)
+                {
+                    hitPoint = playerCollider.ClosestPoint(transform.position);
+                }
+                else
+                {
+                    // If no Collider found, try CharacterController (use its transform as fallback)
+                    var cc = playerTransform.GetComponent<CharacterController>();
+                    if (cc != null)
+                        hitPoint = cc.transform.position;
+                }
+
+                // Compute a small hit force pushing from enemy toward the player hit point
+                Vector3 hitDirection = (hitPoint - transform.position);
+                if (hitDirection.sqrMagnitude > 0.0001f)
+                    hitDirection.Normalize();
+                Vector3 hitForce = hitDirection * hitForceMagnitude;
+
+                // Use the PlayerController's signature that accepts hitPoint and hitForce
+                playerController.TakeDamage(hitPoint, hitForce, attackDamage);
+            }
+            lastAttackTime = Time.time;
+        }
     }
 
     public void TakeDamage(Vector3 hitPoint, Vector3 hitForce, float damage)
