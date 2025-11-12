@@ -48,7 +48,7 @@ public class LevelManager : MonoBehaviour
         Debug.Log("LevelManager: Loaded character = " + (GameDataManager.Instance.selectedCharacterPrefab != null ? GameDataManager.Instance.selectedCharacterPrefab.name : "None"));
 
         // Spawn the selected character first
-        SpawnSelectedCharacter();
+        //SpawnSelectedCharacter();
 
         // Get UI Document if not assigned
         if (uiDocument == null)

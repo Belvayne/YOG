@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour, IDamageable
+public class EnemyController1 : MonoBehaviour, IDamageable
 {
     [SerializeField] private float currentHealth = 100f;
     [SerializeField] private float maxHealth = 100f;
@@ -22,24 +22,6 @@ public class EnemyController : MonoBehaviour, IDamageable
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
         agent = GetComponent<NavMeshAgent>();
-        Die();
-        var ragdoll = GetComponent<RagdollActivator>();
-        if (ragdoll != null)
-        {
-            // Pick a random position within the enemy's bounds as hitPoint
-            Vector3 hitPoint = transform.position;
-            var collider = GetComponent<Collider>();
-            if (collider != null)
-            {
-                Bounds bounds = collider.bounds;
-                hitPoint = new Vector3(
-                    Random.Range(bounds.min.x, bounds.max.x),
-                    Random.Range(bounds.min.y, bounds.max.y),
-                    Random.Range(bounds.min.z, bounds.max.z)
-                );
-            }
-            ragdoll.ActivateRagdoll(hitPoint, Vector3.zero);
-        }
     }
 
     void Update()

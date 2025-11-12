@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class SSRBLogic : EnemyController
+public class SSRBLogic : EnemyController1
 {
     [SerializeField] GameObject explosionEffect;
     [SerializeField] GameObject explosionPoint;

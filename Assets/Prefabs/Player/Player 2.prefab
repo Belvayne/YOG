@@ -386,7 +386,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 7058418161055825911}
+  - {fileID: 8103414315533994278}
   m_Father: {fileID: 5153241673523770687}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5408506956428309772
@@ -559,7 +559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8682559307604300795}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -581,7 +581,7 @@ Transform:
   - {fileID: 5153241673523770687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &5773573300950818257
+--- !u!1001 &4157200010473156944
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -589,57 +589,57 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7812093586456318311}
     m_Modifications:
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 4796223292401312460, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
+      propertyPath: m_Name
+      value: smolcalli_seafoamboy_anim
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
+    - target: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224520575895206044, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
-      propertyPath: m_Name
-      value: Smolgura_seafoamboy_anims
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
---- !u!4 &7058418161055825911 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
+--- !u!4 &8103414315533994278 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3597060778370245158, guid: 0cb734230c397104c972ff72a6c4d97d, type: 3}
-  m_PrefabInstance: {fileID: 5773573300950818257}
+  m_CorrespondingSourceObject: {fileID: 5315455927295981686, guid: 425c85b44ba1a7041bc03a265fa1998f, type: 3}
+  m_PrefabInstance: {fileID: 4157200010473156944}
   m_PrefabAsset: {fileID: 0}

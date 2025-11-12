@@ -62,7 +62,7 @@ public class RagdollActivator : MonoBehaviour
         StartCoroutine(StopMomentum());
 
         // Start sinking and destroy coroutine
-        StartCoroutine(RiseAndDestroyCoroutine());
+        //StartCoroutine(RiseAndDestroyCoroutine());
     }
 
     private IEnumerator RiseAndDestroyCoroutine()

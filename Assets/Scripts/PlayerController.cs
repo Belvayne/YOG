@@ -84,20 +84,20 @@ public class PlayerController : MonoBehaviour
 
         // Initialize ammo
         currentAmmo = maxAmmo;
-        currentWeapon = Instantiate(weaponPrefab1, weaponPoint);
-        currentWeapon.transform.localPosition = Vector3.zero;
-        currentWeapon.transform.localRotation = Quaternion.identity;
+        //currentWeapon = Instantiate(weaponPrefab1, weaponPoint);
+        //currentWeapon.transform.localPosition = Vector3.zero;
+        //currentWeapon.transform.localRotation = Quaternion.identity;
 
-        // If the new weapon contains a child named "FiringPoint", use that as the fire point
-        Transform newFire = currentWeapon.transform.Find("FiringPoint");
-        Debug.Log($"FiringPoint: {newFire}");
-        if (newFire != null)
-        {
-            firePoint = newFire;
-            Debug.Log("Fire point updated to new weapon's FiringPoint.");
-        }
+        //// If the new weapon contains a child named "FiringPoint", use that as the fire point
+        //Transform newFire = currentWeapon.transform.Find("FiringPoint");
+        //Debug.Log($"FiringPoint: {newFire}");
+        //if (newFire != null)
+        //{
+        //    firePoint = newFire;
+        //    Debug.Log("Fire point updated to new weapon's FiringPoint.");
+        //}
 
-        Debug.Log($"Equipped weapon: {weaponPrefab1.name}");
+        //Debug.Log($"Equipped weapon: {weaponPrefab1.name}");
 
         var uiDoc = FindAnyObjectByType<UIDocument>();
         if (uiDoc == null) { Debug.LogWarning("No UIDocument found in scene."); return; }
@@ -368,50 +368,50 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isShooting && !isReloading && currentAmmo > 0 && Time.time >= lastFireTime + fireRate)
-        {
-            Shoot();
-        }
+        //if (isShooting && !isReloading && currentAmmo > 0 && Time.time >= lastFireTime + fireRate)
+        //{
+        //    Shoot();
+        //}
 
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
+        //Vector3 forward = cameraTransform.forward;
+        //Vector3 right = cameraTransform.right;
 
-        forward.y = 0;
-        right.y = 0;
-        forward.Normalize();
-        right.Normalize();
+        //forward.y = 0;
+        //right.y = 0;
+        //forward.Normalize();
+        //right.Normalize();
 
-        Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
+        //Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
 
-        float currentSpeed = isSprinting ? speed * sprintMultiplier : speed;
+        //float currentSpeed = isSprinting ? speed * sprintMultiplier : speed;
 
-        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+        //controller.Move(moveDirection * currentSpeed * Time.deltaTime);
 
-        if (shouldFaceMoveDirection && moveDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, 10f * Time.deltaTime);
-        }
+        ////if (shouldFaceMoveDirection && moveDirection.sqrMagnitude > 0.001f)
+        ////{
+        ////    Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
+        ////    transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, 10f * Time.deltaTime);
+        ////}
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-        if (animator)
-        {
-            animator.SetBool("isWalking", moveDirection.magnitude > 0.1f);
-        }
+        //if (animator)
+        //{
+        //    animator.SetBool("isWalking", moveDirection.magnitude > 0.1f);
+        //}
 
-        if (playerTransform != null && targetRotation.HasValue)
-        {
-            playerTransform.rotation = Quaternion.Slerp(
-                playerTransform.rotation,
-                targetRotation.Value,
-                rotateToCameraSpeed * Time.deltaTime
-            );
+        //if (playerTransform != null && targetRotation.HasValue)
+        //{
+        //    playerTransform.rotation = Quaternion.Slerp(
+        //        playerTransform.rotation,
+        //        targetRotation.Value,
+        //        rotateToCameraSpeed * Time.deltaTime
+        //    );
 
-            if (Quaternion.Angle(playerTransform.rotation, targetRotation.Value) < 0.5f)
-            {
-                targetRotation = null;
-            }
-        }
+        //    if (Quaternion.Angle(playerTransform.rotation, targetRotation.Value) < 0.5f)
+        //    {
+        //        targetRotation = null;
+        //    }
+        //}
     }
 }
