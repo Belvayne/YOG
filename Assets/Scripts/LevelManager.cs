@@ -212,7 +212,7 @@ public class LevelManager : MonoBehaviour
         }
     }
     
-    private void TogglePause()
+    public void TogglePause()
     {
         if (isPaused)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.8f;
     [SerializeField] private bool shouldFaceMoveDirection = false;
+
+    private float maxHealth = 100f;
+    private float currentHealth;
 
     private CharacterController controller;
     private Animator animator;
@@ -63,10 +67,20 @@ public class PlayerController : MonoBehaviour
 
     private GameObject currentWeapon;
 
+    private ProgressBar healthBar;
+
+    private VisualElement root;
+
+    private LevelManager levelManager;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        currentHealth = maxHealth;
+
         controller = GetComponent<CharacterController>();
+
+        levelManager = FindAnyObjectByType<LevelManager>();
 
         // Initialize ammo
         currentAmmo = maxAmmo;
@@ -84,14 +98,34 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.Log($"Equipped weapon: {weaponPrefab1.name}");
-        // Create fire point if not assigned
-        //if (firePoint == null)
-        //{
-        //    GameObject firePointObj = new GameObject("FirePoint");
-        //    firePointObj.transform.SetParent(transform);
-        //    firePointObj.transform.localPosition = new Vector3(0, 1.5f, 1f);
-        //    firePoint = firePointObj.transform;
-        //}
+
+        var uiDoc = FindAnyObjectByType<UIDocument>();
+        if (uiDoc == null) { Debug.LogWarning("No UIDocument found in scene."); return; }
+        root = uiDoc.rootVisualElement;
+
+        // Try to get the ProgressBar element by name first
+        healthBar = root.Q<ProgressBar>("HealthBar");
+        if (healthBar == null)
+        {
+            Debug.LogWarning("HealthBar not found in UIDocument.");
+            return;
+        }
+
+        // The visible fill element of a ProgressBar is a child with the progress class.
+        // Query the child from the ProgressBar to avoid accidentally finding another element with the same class.
+        var progressFill = healthBar.Q(className: "unity-progress-bar__progress");
+        if (progressFill != null)
+        {
+            // Use a StyleColor wrapper to set the inline background color
+            progressFill.style.backgroundColor = new UnityEngine.UIElements.StyleColor(Color.red);
+        }
+        else
+        {
+            Debug.LogWarning("Progress fill element not found on HealthBar.");
+        }
+
+        // Initialize the health value
+        healthBar.value = currentHealth;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -306,11 +340,33 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Equipped weapon: {prefab.name}");
     }
 
+    public void TakeDamage(Vector3 hitPoint, Vector3 hitForce, float damage)
+    {
+        currentHealth -= damage;
+        healthBar.value = currentHealth;
+        Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
+        if (currentHealth <= 0)
+        {
+            Die();
+            var ragdoll = GetComponent<RagdollActivator>();
+            if (ragdoll != null)
+                ragdoll.ActivateRagdoll(hitPoint, hitForce);
+        }
+    }
+
+    private void Die()
+    {
+        levelManager.TogglePause();
+        // Implement death behavior (e.g., respawn, game over screen)
+    }
+
     // Public getters for UI
     public int GetCurrentAmmo() => currentAmmo;
     public int GetMaxAmmo() => maxAmmo;
     public bool IsReloading() => isReloading;
     public bool IsAiming() => isAiming;
+    public float GetCurrentHealth() => currentHealth;
+    public bool IsDead() => currentHealth <= 0;
 
     // Update is called once per frame
     void Update()
