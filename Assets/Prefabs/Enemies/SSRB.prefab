@@ -240,8 +240,10 @@ MonoBehaviour:
   attackDamage: 10
   playerTransform: {fileID: 0}
   rotationSpeed: 5
+  hitForceMagnitude: 5
   explosionEffect: {fileID: 4957287117012756304, guid: 9fd08b089d4212344b927ec6963499d4, type: 3}
   explosionPoint: {fileID: 948762098552876443}
+  explosionSFX: {fileID: 8300000, guid: 42ddfdb59b864de4d9625e22a5dca1fa, type: 3}
 --- !u!135 &5894924865211156658
 SphereCollider:
   m_ObjectHideFlags: 0

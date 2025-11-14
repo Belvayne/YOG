@@ -5,6 +5,7 @@ public class SSRBLogic : EnemyController
 {
     [SerializeField] GameObject explosionEffect;
     [SerializeField] GameObject explosionPoint;
+    [SerializeField] private AudioClip explosionSFX;
 
     public override void Die()
     {
@@ -29,6 +30,10 @@ public class SSRBLogic : EnemyController
             if (explosionEffect != null)
             {
                 Instantiate(explosionEffect, explosionPos, Quaternion.identity);
+            }
+            if (explosionSFX != null)
+            {
+                AudioSource.PlayClipAtPoint(explosionSFX, explosionPos, 2.5f);
             }
         }
     }
