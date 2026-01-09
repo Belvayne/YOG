@@ -14,17 +14,17 @@ public class EnemyController : MonoBehaviour, IDamageable
 
     [SerializeField] private float hitForceMagnitude = 5f;
 
-    private bool isDead = false;
+    public bool isDead = false;
     private float lastAttackTime = -Mathf.Infinity;
     private NavMeshAgent agent;
 
-    void Start()
+    public virtual void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
-    void Update()
+    public virtual void Update()
     {
         // Fix: Check if playerController is not null and use PlayerController's IsDead() method
         if (isDead || playerTransform == null)

@@ -1,338 +1,183 @@
-using System.Reflection;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class TakodachiLogic : EnemyController
 {
-    // Health (mirrors fields in base for inspector tuning)
-    [SerializeField] private float maxHealth =100f;
-    [SerializeField] private float currentHealth =100f;
-
     // Flying/hovering
-    [SerializeField] private float maxHeight =5f; // maximum distance allowed above the nearest surface below
-    [SerializeField] private float currentHeight =0f; // updated at runtime
+    [SerializeField] private float maxHeight = 3f; // maximum distance allowed above the nearest surface below
+    [SerializeField] private float minHeight = 1f; // minimum distance allowed above the nearest surface below
+    [SerializeField] private float currentHeight = 0f; // updated at runtime
 
     // Movement
-    [SerializeField] private float speed =5f;
+    [SerializeField] private float speed = 5f;
+    private NavMeshAgent agent;
 
-    // Obstacle detection and avoidance
-    [SerializeField] private float detectionDistance =3f; // how far ahead to check for obstacles
-    [SerializeField] private float detectionSearchHeight =30f; // how high above to start the downward ray
-    [SerializeField] private float clearanceAboveTop =0.5f; // how much clearance above obstacle top is required to pass
-    [SerializeField] private float sideAvoidDistance =3f; // how far to move sideways when going around
-    [SerializeField] private float avoidanceDuration =1.0f; // how long to keep steering around
+    // Vertical control
+    [SerializeField] private float bobFrequency = 0.5f; // cycles per second
+    [SerializeField] private float verticalSmoothSpeed = 5f; // smoothing speed for lerp
+    private float bobPhase;
 
-    private float avoidUntilTime =0f;
-    private Vector3 avoidanceTarget = Vector3.zero;
+    // (left for potential future use)
+    [SerializeField] private float floatTargetThreshold = 0.05f; // legacy
 
-    // Attack tuning (mirror of base's attack cooldown)
-    [SerializeField] private float attackSpeed =1.5f; // corresponds to base's attackCooldown
-    [SerializeField] private float lastAttackTime = -Mathf.Infinity; // mirror of timing
-
-    // Additional tuning mirrors
-    [SerializeField] private float attackRange =2f;
-    [SerializeField] private int attackDamage =10;
-    [SerializeField] private float hitForceMagnitude =5f;
-    [SerializeField] private float rotationSpeed =5f;
+    //attack
+    [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float lastAttackTime = -Mathf.Infinity;
+    [SerializeField] private float attackRange = 50f;
+    [SerializeField] private GameObject projectilePrefab;
 
     private Transform playerTransform;
 
-    private void Start()
+    public override void Start()
     {
-        // Initialize player transform here and mirror it into base via reflection
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+        agent = GetComponent<NavMeshAgent>();
 
-        // Remove NavMeshAgent if present: flying enemy uses manual movement
-        var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        // Prevent NavMeshAgent from directly setting transform position/rotation so we control vertical movement
         if (agent != null)
-            Destroy(agent);
-
-        // Sync serialized tuning values into private fields of the base EnemyController using reflection
-        var baseType = typeof(EnemyController);
-
-        // currentHealth
-        var baseCurrentField = baseType.GetField("currentHealth", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseCurrentField != null)
-            baseCurrentField.SetValue(this, currentHealth);
-
-        // maxHealth
-        var baseMaxField = baseType.GetField("maxHealth", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseMaxField != null)
-            baseMaxField.SetValue(this, maxHealth);
-
-        // moveSpeed -> speed
-        var baseMoveSpeedField = baseType.GetField("moveSpeed", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseMoveSpeedField != null)
-            baseMoveSpeedField.SetValue(this, speed);
-
-        // attackCooldown -> attackSpeed
-        var baseAttackCooldownField = baseType.GetField("attackCooldown", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseAttackCooldownField != null)
-            baseAttackCooldownField.SetValue(this, attackSpeed);
-
-        // lastAttackTime (mirror)
-        var baseLastAttackField = baseType.GetField("lastAttackTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseLastAttackField != null)
-            baseLastAttackField.SetValue(this, lastAttackTime);
-
-        // playerTransform
-        var basePlayerTransformField = baseType.GetField("playerTransform", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (basePlayerTransformField != null)
-            basePlayerTransformField.SetValue(this, playerTransform);
-
-        // rotationSpeed
-        var baseRotationField = baseType.GetField("rotationSpeed", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseRotationField != null)
-            baseRotationField.SetValue(this, rotationSpeed);
-
-        // attackRange
-        var baseAttackRangeField = baseType.GetField("attackRange", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseAttackRangeField != null)
-            baseAttackRangeField.SetValue(this, attackRange);
-
-        // attackDamage
-        var baseAttackDamageField = baseType.GetField("attackDamage", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseAttackDamageField != null)
-            baseAttackDamageField.SetValue(this, attackDamage);
-
-        // hitForceMagnitude
-        var baseHitForceField = baseType.GetField("hitForceMagnitude", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseHitForceField != null)
-            baseHitForceField.SetValue(this, hitForceMagnitude);
-    }
-
-    private void Update()
-    {
-        // Avoid running if base reports dead or no player
-        if (IsDead())
-            return;
-
-        if (playerTransform == null)
         {
-            playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
-            // mirror into base if possible
-            var basePlayerTransformField = typeof(EnemyController).GetField("playerTransform", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (basePlayerTransformField != null)
-                basePlayerTransformField.SetValue(this, playerTransform);
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+            agent.speed = speed;
         }
 
-        if (playerTransform == null)
+        // randomize bob phase so multiple takodachi don't bob in unison
+        bobPhase = Random.Range(0f, Mathf.PI * 2f);
+    }
+
+    public override void Update()
+    {
+        // Fix: Check if playerController is not null and use PlayerController's IsDead() method
+        if (isDead || playerTransform == null)
             return;
 
-        // compute horizontal forward direction toward player (XZ only)
-        Vector3 toPlayer = playerTransform.position - transform.position;
-        Vector3 forwardXZ = new Vector3(toPlayer.x,0f, toPlayer.z);
-        if (forwardXZ.sqrMagnitude <0.0001f)
-            forwardXZ = transform.forward;
-        forwardXZ.Normalize();
+        var playerController = playerTransform.GetComponent<PlayerController>();
+        if (playerController != null && playerController.IsDead())
+            return;
 
-        Vector3 horizontalTarget = transform.position;
+        // Let NavMeshAgent compute a horizontal path, but do not let it move us vertically
+        if (agent != null)
+            agent.SetDestination(playerTransform.position);
 
-        // If we're currently avoiding, keep steering to the avoidance target until timeout
-        if (Time.time < avoidUntilTime)
+        // Determine horizontal target: prefer agent steering target so the enemy navigates around obstacles
+        Vector3 horizontalTarget;
+        if (agent != null && agent.hasPath)
         {
-            horizontalTarget = new Vector3(avoidanceTarget.x, transform.position.y, avoidanceTarget.z);
+            var steer = agent.steeringTarget;
+            horizontalTarget = new Vector3(steer.x, transform.position.y, steer.z);
         }
         else
         {
-            // Look ahead at a point in the forward direction and detect the top surface there
-            Vector3 aheadPoint = transform.position + forwardXZ * detectionDistance;
-            float aheadTopY;
-            bool hasAheadTop = TryGetTopYAt(aheadPoint, out aheadTopY);
-
-            // Get ground underneath current position
-            float currentGroundY;
-            bool hasCurrentGround = TryGetTopYAt(new Vector3(transform.position.x, transform.position.y, transform.position.z), out currentGroundY);
-            if (!hasCurrentGround)
-                currentGroundY = transform.position.y - currentHeight; // fallback
-
-            bool needAvoid = false;
-
-            if (hasAheadTop)
-            {
-                // compute required Y to clear obstacle top
-                float requiredYToClear = aheadTopY + clearanceAboveTop;
-                // compute how high that required Y is above current ground
-                float requiredAboveCurrentGround = requiredYToClear - currentGroundY;
-
-                if (requiredAboveCurrentGround <= maxHeight)
-                {
-                    // We can clear by ascending: set horizontal target toward forward (we will adjust Y below)
-                    horizontalTarget = new Vector3(aheadPoint.x, transform.position.y, aheadPoint.z);
-                }
-                else
-                {
-                    // Obstacle too tall to clear while respecting maxHeight -> need to avoid laterally
-                    needAvoid = true;
-                }
-            }
-            else
-            {
-                // No surface ahead detected: just head to player horizontally
-                horizontalTarget = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
-            }
-
-            if (needAvoid)
-            {
-                // test left and right to find side that is clearer
-                Vector3 leftDir = Quaternion.Euler(0f, -90f,0f) * forwardXZ;
-                Vector3 rightDir = Quaternion.Euler(0f,90f,0f) * forwardXZ;
-
-                Vector3 leftCheck = transform.position + leftDir * sideAvoidDistance + forwardXZ * detectionDistance;
-                Vector3 rightCheck = transform.position + rightDir * sideAvoidDistance + forwardXZ * detectionDistance;
-
-                float leftTop = float.MaxValue;
-                float rightTop = float.MaxValue;
-                bool leftHas = TryGetTopYAt(leftCheck, out leftTop);
-                bool rightHas = TryGetTopYAt(rightCheck, out rightTop);
-
-                bool leftClear = leftHas && ((leftTop + clearanceAboveTop - currentGroundY) <= maxHeight);
-                bool rightClear = rightHas && ((rightTop + clearanceAboveTop - currentGroundY) <= maxHeight);
-
-                Vector3 chosenSide;
-                if (leftClear && !rightClear)
-                    chosenSide = leftCheck;
-                else if (rightClear && !leftClear)
-                    chosenSide = rightCheck;
-                else if (leftClear && rightClear)
-                    chosenSide = (leftTop < rightTop) ? leftCheck : rightCheck;
-                else
-                    chosenSide = (leftTop < rightTop) ? leftCheck : rightCheck; // both blocked: pick lower top and try to circumvent
-
-                // set avoidance target and timer
-                avoidanceTarget = new Vector3(chosenSide.x, transform.position.y, chosenSide.z);
-                avoidUntilTime = Time.time + avoidanceDuration;
-                horizontalTarget = avoidanceTarget;
-            }
+            horizontalTarget = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
         }
 
-        // Move horizontally toward the computed target
+        // Move horizontally toward target
         Vector3 newPos = Vector3.MoveTowards(transform.position, horizontalTarget, speed * Time.deltaTime);
 
-        // Vertical control: maintain hovering within maxHeight over the nearest surface beneath us
+        // Vertical control: raycast down to find surface under the enemy and compute min/max allowed Y
         RaycastHit hit;
-        float maxSearchDistance =100f;
-        if (Physics.Raycast(transform.position + Vector3.up *0.1f, Vector3.down, out hit, maxSearchDistance))
+        float maxSearchDistance = 100f;
+        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out hit, maxSearchDistance))
         {
-            currentHeight = hit.distance -0.1f; // subtract the small offset used in the ray origin
+            currentHeight = hit.distance - 0.1f; // account for small offset
 
-            // We want to remain within maxHeight above the surface beneath us.
-            float desiredY = transform.position.y;
-            float allowedY = hit.point.y + maxHeight;
+            float minAllowedY = hit.point.y + minHeight;
+            float maxAllowedY = hit.point.y + maxHeight;
 
-            // If avoidance-based ascent was requested (to clear an obstacle directly ahead), we may need to ascend above current Y
-            // Check immediate forward point again to see if we should clear an object by ascending
-            Vector3 aheadPoint2 = transform.position + new Vector3((playerTransform.position - transform.position).x,0f, (playerTransform.position - transform.position).z).normalized * detectionDistance;
-            float aheadTopY2;
-            if (TryGetTopYAt(aheadPoint2, out aheadTopY2))
-            {
-                float requiredYToClear = aheadTopY2 + clearanceAboveTop;
-                // Only ascend if required Y is not higher than allowed by nearest surface beneath (so we still respect maxHeight rule)
-                if (requiredYToClear <= (hit.point.y + maxHeight))
-                {
-                    desiredY = Mathf.Lerp(transform.position.y, requiredYToClear, Time.deltaTime * speed);
-                }
-            }
+            // Sine-wave bobbing between min and max
+            float centerY = (minAllowedY + maxAllowedY) * 0.5f;
+            float amplitude = Mathf.Max(0.001f, (maxAllowedY - minAllowedY) * 0.5f);
+            float desiredY = centerY + amplitude * Mathf.Sin(Time.time * (Mathf.PI * 2f * bobFrequency) + bobPhase);
 
-            // Clamp downward/upward to stay within allowed bounds
-            if (desiredY > allowedY)
-                desiredY = Mathf.Lerp(transform.position.y, allowedY, Time.deltaTime * speed);
-            else if (desiredY < hit.point.y +0.5f)
-                desiredY = Mathf.Lerp(transform.position.y, hit.point.y +0.5f, Time.deltaTime * speed);
+            // Clamp desiredY to ensure it stays within bounds
+            desiredY = Mathf.Clamp(desiredY, minAllowedY, maxAllowedY);
 
-            newPos.y = desiredY;
+            // Smoothly move the transform's Y toward desiredY to avoid jitter
+            float smoothY = Mathf.Lerp(transform.position.y, desiredY, Time.deltaTime * verticalSmoothSpeed);
+            newPos.y = smoothY;
         }
         else
         {
             // No surface found below within search distance: keep current Y
             currentHeight = float.PositiveInfinity;
+            newPos.y = transform.position.y;
         }
 
+        // Apply horizontal movement and smoothed vertical separately
         transform.position = newPos;
+
+        // Keep agent internal position in sync with our transform so pathfinding remains stable
+        if (agent != null)
+            agent.nextPosition = new Vector3(transform.position.x, agent.nextPosition.y, transform.position.z);
 
         // Face the player (yaw only)
         Vector3 lookDir = playerTransform.position - transform.position;
-        lookDir.y =0f;
-        if (lookDir.sqrMagnitude >0.001f)
+        lookDir.y = 0f;
+        if (lookDir.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
         }
 
         // Attack-only logic: deal damage when within range and cooldown passed
         float sqrDistance = (playerTransform.position - transform.position).sqrMagnitude;
         float attackRangeSqr = attackRange * attackRange;
-        if (sqrDistance <= attackRangeSqr && Time.time >= lastAttackTime + attackSpeed)
+        if (sqrDistance <= attackRangeSqr && Time.time >= lastAttackTime + attackCooldown)
         {
-            var playerController = playerTransform.GetComponent<PlayerController>();
-            if (playerController != null && playerController.GetCurrentHealth() >0)
-            {
-                // Determine closest point on the player's collider (fallback to player position)
-                Vector3 hitPoint = playerTransform.position;
-                Collider playerCollider = playerTransform.GetComponent<Collider>();
-                if (playerCollider != null)
-                {
-                    hitPoint = playerCollider.ClosestPoint(transform.position);
-                }
-                else
-                {
-                    var cc = playerTransform.GetComponent<CharacterController>();
-                    if (cc != null)
-                        hitPoint = cc.transform.position;
-                }
-
-                Vector3 hitDirection = (hitPoint - transform.position);
-                if (hitDirection.sqrMagnitude >0.0001f)
-                    hitDirection.Normalize();
-                Vector3 hitForce = hitDirection * hitForceMagnitude;
-
-                playerController.TakeDamage(hitPoint, hitForce, attackDamage);
-            }
-
+            //trigger projectile attack here
+            ShootProjectile();
             lastAttackTime = Time.time;
-
-            // mirror lastAttackTime into base field as well
-            var baseLastAttackField = typeof(EnemyController).GetField("lastAttackTime", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (baseLastAttackField != null)
-                baseLastAttackField.SetValue(this, lastAttackTime);
-        }
-
-        // Mirror health and timing values back from base to show correct values in this inspector
-        var baseType = typeof(EnemyController);
-        var baseCurrentField = baseType.GetField("currentHealth", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseCurrentField != null)
-        {
-            var val = baseCurrentField.GetValue(this);
-            if (val is float cf)
-                currentHealth = cf;
-        }
-        var baseMaxField = baseType.GetField("maxHealth", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseMaxField != null)
-        {
-            var val = baseMaxField.GetValue(this);
-            if (val is float mf)
-                maxHealth = mf;
-        }
-
-        var baseLastAttack = baseType.GetField("lastAttackTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (baseLastAttack != null)
-        {
-            var val = baseLastAttack.GetValue(this);
-            if (val is float f)
-                lastAttackTime = f;
         }
     }
 
-    // Helper: cast from high above `pos` straight down and return the y coordinate of the first hit (top surface at that horizontal location)
-    private bool TryGetTopYAt(Vector3 pos, out float topY)
+    private void ShootProjectile()
     {
-        RaycastHit hit;
-        Vector3 start = new Vector3(pos.x, pos.y + detectionSearchHeight, pos.z);
-        if (Physics.Raycast(start, Vector3.down, out hit, detectionSearchHeight *2f))
+        Debug.Log("Takodachi: Shooting projectile at player.");
+        if (projectilePrefab == null)
         {
-            topY = hit.point.y;
-            return true;
+            Debug.LogWarning("Takodachi: projectilePrefab is not assigned.");
+            return;
         }
-        topY =0f;
-        return false;
+
+        if (playerTransform == null)
+        {
+            Debug.LogWarning("Takodachi: playerTransform is null.");
+            return;
+        }
+
+        // Spawn slightly in front of the enemy
+        Vector3 spawnPos = transform.position + transform.forward * 1f;
+
+        // Aim direction toward player's current position
+        Vector3 aimDir = (playerTransform.position - spawnPos).normalized;
+        Quaternion rot = Quaternion.LookRotation(aimDir);
+
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, rot);
+
+        // Try to get player's movement velocity (prefer CharacterController.velocity, fallback to Rigidbody)
+        Vector3 playerVelocity = Vector3.zero;
+        var playerCC = playerTransform.GetComponent<CharacterController>();
+        if (playerCC != null)
+        {
+            playerVelocity = playerCC.velocity;
+        }
+        else
+        {
+            var playerRb = playerTransform.GetComponent<Rigidbody>();
+            if (playerRb != null)
+                playerVelocity = playerRb.linearVelocity;
+        }
+
+        // Set projectile velocity: forward * speed + player's velocity to account for movement
+        const float projectileSpeed = 5f;
+        var rb = proj.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            // If prefab lacks Rigidbody, add one so we can set velocity. Disable gravity for projectiles by default.
+            rb = proj.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+        }
+
+        rb.linearVelocity = aimDir * projectileSpeed + playerVelocity;
     }
 }
